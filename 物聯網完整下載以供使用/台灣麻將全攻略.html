@@ -1,0 +1,1939 @@
+
+<!DOCTYPE html> 
+
+<html lang="zh-TW"> 
+
+<head> 
+
+<meta charset="UTF-8"> 
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"> 
+
+<title>台灣麻將全攻略</title> 
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet"> 
+
+<style> 
+
+:root{--jade:#1a6b4a;--jade-l:#2d9e6f;--jade-d:#0d4a32;--gold:#c9951a;--gold-l:#f0b830;--red:#c0392b;--ivory:#faf8f0;--smoke:#6b6b6b} 
+
+*{box-sizing:border-box;margin:0;padding:0} 
+
+html{scroll-behavior:smooth} 
+
+body{font-family:'Noto Sans TC',sans-serif;background:#0e0e0e;color:var(--ivory);overflow-x:hidden} 
+
+ 
+
+/* ── NAV ── */ 
+
+#topnav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,8,8,.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,149,26,.2);padding:0 16px;transform:translateY(-100%);transition:transform .3s} 
+
+#topnav.visible{transform:translateY(0)} 
+
+.nav-inner{max-width:1100px;margin:0 auto;height:52px;display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none} 
+
+.nav-inner::-webkit-scrollbar{display:none} 
+
+.nav-link{white-space:nowrap;padding:5px 12px;border-radius:6px;font-size:13px;font-weight:500;color:rgba(255,255,255,.55);cursor:pointer;transition:all .2s;border:none;background:none;font-family:'Noto Sans TC',sans-serif} 
+
+.nav-link:hover{background:rgba(26,107,74,.3);color:var(--gold-l)} 
+
+ 
+
+/* ── HERO ── */ 
+
+#hero{min-height:100vh;background:radial-gradient(ellipse at 20% 50%,rgba(26,107,74,.4),transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(201,149,26,.2),transparent 50%),linear-gradient(160deg,#060606,#0e1710 50%,#080e0b);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:20px} 
+
+.hero-content{position:relative;z-index:2;text-align:center;max-width:820px} 
+
+.hero-badge{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--gold-l));color:#2a1a00;font-family:'Noto Serif TC',serif;font-size:11px;font-weight:700;letter-spacing:3px;padding:5px 18px;border-radius:20px;margin-bottom:24px} 
+
+.hero-title{font-family:'Noto Serif TC',serif;font-size:clamp(48px,10vw,96px);font-weight:900;line-height:1;letter-spacing:-2px;background:linear-gradient(135deg,#fff,var(--gold-l) 50%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px} 
+
+.hero-sub{font-family:'Noto Serif TC',serif;font-size:clamp(14px,3vw,22px);color:rgba(255,255,255,.55);letter-spacing:5px;margin-bottom:44px} 
+
+.hero-show{display:flex;gap:8px;justify-content:center;margin-bottom:44px;flex-wrap:wrap} 
+
+.hero-nav{display:flex;gap:10px;flex-wrap:wrap;justify-content:center} 
+
+.hero-btn{padding:13px 26px;border-radius:8px;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s;display:inline-block;border:none} 
+
+.hero-btn.p{background:linear-gradient(135deg,var(--jade),var(--jade-l));color:#fff;box-shadow:0 4px 16px rgba(26,107,74,.4)} 
+
+.hero-btn.p:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,107,74,.5)} 
+
+.hero-btn.s{background:transparent;color:var(--gold-l);border:2px solid var(--gold)} 
+
+.hero-btn.s:hover{background:var(--gold);color:#2a1a00} 
+
+ 
+
+/* ── 3D TILE ── */ 
+
+.mj-tile{ 
+
+width:44px;height:62px; 
+
+background:linear-gradient(145deg,#ffffff 0%,#f1f3f5 100%); 
+
+border-radius:5px;position:relative;cursor:default; 
+
+box-shadow: 
+
+inset 1px 1px 2px rgba(255,255,255,1), 
+
+inset -1px -1px 2px rgba(0,0,0,.05), 
+
+0 2px 0 #cccccc, 
+
+0 5px 0 #166534, 
+
+2px 7px 8px rgba(0,0,0,.45); 
+
+transform-style:preserve-3d; 
+
+transition:all .2s cubic-bezier(.34,1.56,.64,1); 
+
+user-select:none; 
+
+display:inline-flex; 
+
+justify-content:center; 
+
+align-items:center; 
+
+flex-shrink:0; 
+
+} 
+
+.mj-tile svg{width:100%;height:100%;border-radius:inherit;display:block} 
+
+.mj-tile:hover{ 
+
+transform:translateY(-6px) scale(1.06); 
+
+box-shadow: 
+
+inset 1px 1px 2px rgba(255,255,255,1), 
+
+inset -1px -1px 2px rgba(0,0,0,.05), 
+
+0 2px 0 #cccccc, 
+
+0 10px 0 #166534, 
+
+3px 14px 14px rgba(0,0,0,.55); 
+
+z-index:10; 
+
+} 
+
+/* sizes */ 
+
+.mj-tile.sm{width:34px;height:48px} 
+
+.mj-tile.md{width:44px;height:62px} 
+
+.mj-tile.lg{width:56px;height:78px} 
+
+.mj-tile.xl{width:68px;height:96px} 
+
+/* player hand tile */ 
+
+.mj-tile.pt{width:38px;height:54px;cursor:pointer} 
+
+.mj-tile.pt:hover{ 
+
+transform:translateY(-10px) scale(1.08); 
+
+box-shadow:inset 1px 1px 2px rgba(255,255,255,1),0 2px 0 #aaa,0 12px 0 #166534,3px 16px 16px rgba(0,0,0,.6); 
+
+} 
+
+.mj-tile.pt.sel{ 
+
+transform:translateY(-14px) scale(1.08); 
+
+box-shadow:inset 1px 1px 2px rgba(255,255,255,1),0 2px 0 #aaa,0 14px 0 #166534,3px 18px 16px rgba(0,0,0,.65),0 0 0 2px var(--gold-l); 
+
+} 
+
+/* back of tile */ 
+
+.mj-tile.back{ 
+
+background:linear-gradient(145deg,#2a5a3a,#183828); 
+
+box-shadow:0 2px 0 #0a2515,0 5px 0 #062010,2px 7px 8px rgba(0,0,0,.5); 
+
+} 
+
+/* new tile animation */ 
+
+.mj-tile.nt{animation:ntIn .4s cubic-bezier(.34,1.56,.64,1)} 
+
+@keyframes ntIn{from{transform:translateY(-30px) scale(.8);opacity:0}to{opacity:1}} 
+
+ 
+
+.tile-row{display:flex;flex-wrap:wrap;gap:5px;align-items:flex-end} 
+
+ 
+
+/* ── SECTIONS ── */ 
+
+.section{max-width:1100px;margin:0 auto;padding:70px 20px} 
+
+.sec-hdr{display:flex;align-items:baseline;gap:14px;margin-bottom:44px} 
+
+.sec-num{font-family:'Noto Serif TC',serif;font-size:64px;font-weight:900;color:rgba(201,149,26,.13);line-height:1;flex-shrink:0} 
+
+.sec-title h2{font-family:'Noto Serif TC',serif;font-size:clamp(22px,4vw,34px);font-weight:700;color:var(--ivory)} 
+
+.sec-title p{font-size:13px;color:var(--smoke);margin-top:4px} 
+
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(201,149,26,.25),transparent)} 
+
+ 
+
+/* ── GRID LAYOUTS ── */ 
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-bottom:36px} 
+
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px} 
+
+.grid4{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px} 
+
+ 
+
+/* ── CARDS ── */ 
+
+.cat-card{background:rgba(255,255,255,.03);border:1px solid rgba(201,149,26,.12);border-radius:12px;padding:22px;transition:border-color .2s,transform .2s} 
+
+.cat-card:hover{border-color:rgba(201,149,26,.35);transform:translateY(-2px)} 
+
+.cat-title{font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:var(--gold-l);margin-bottom:10px} 
+
+.cat-desc{font-size:13px;color:rgba(255,255,255,.52);line-height:1.75;margin-bottom:14px} 
+
+.act-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:18px;transition:all .25s} 
+
+.act-card:hover{border-color:var(--jade-l);background:rgba(26,107,74,.09);transform:translateY(-3px)} 
+
+.act-icon{font-size:30px;margin-bottom:10px} 
+
+.act-card h3{font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:var(--gold-l);margin-bottom:6px} 
+
+.act-card p{font-size:12px;color:rgba(255,255,255,.52);line-height:1.7;margin-bottom:10px} 
+
+.pat-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:18px;transition:all .25s} 
+
+.pat-card:hover{border-color:rgba(201,149,26,.28);transform:translateY(-2px)} 
+
+.pat-card h3{font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--ivory);margin-bottom:5px;display:flex;align-items:center;justify-content:space-between} 
+
+.pat-card p{font-size:12px;color:rgba(255,255,255,.48);line-height:1.7;margin-bottom:10px} 
+
+.rules-flow{display:grid;gap:14px} 
+
+.rule-step{display:grid;grid-template-columns:46px 1fr;gap:18px;align-items:start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:18px} 
+
+.step-num{width:46px;height:46px;background:linear-gradient(135deg,var(--jade-d),var(--jade));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Noto Serif TC',serif;font-size:19px;font-weight:900;color:var(--gold-l);flex-shrink:0} 
+
+.rule-step h3{font-family:'Noto Serif TC',serif;font-size:15px;font-weight:700;color:var(--gold-l);margin-bottom:7px} 
+
+.rule-step p,.rule-step li{font-size:13px;color:rgba(255,255,255,.62);line-height:1.8} 
+
+.rule-step ul{padding-left:15px} 
+
+ 
+
+/* ── SCORING ── */ 
+
+.score-wrap{overflow-x:auto} 
+
+.scoring-table{width:100%;border-collapse:collapse;font-size:13px} 
+
+.scoring-table th{background:linear-gradient(135deg,var(--jade-d),var(--jade));color:var(--gold-l);font-family:'Noto Serif TC',serif;font-weight:700;padding:11px 14px;text-align:left;white-space:nowrap} 
+
+.scoring-table td{padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.68);vertical-align:middle} 
+
+.scoring-table tr:hover td{background:rgba(201,149,26,.04)} 
+
+.tb{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;color:#fff;white-space:nowrap} 
+
+.t1{background:linear-gradient(135deg,#4a7a5a,#2d9e6f)}.t2{background:linear-gradient(135deg,#3a6070,#3a8a9f)}.t3{background:linear-gradient(135deg,#8a6a00,#c9951a)}.t4{background:linear-gradient(135deg,#ffb6d5,#ff7ab7)}.t5{background:linear-gradient(135deg,#7a4a00,#c06010)}.t8{background:linear-gradient(135deg,#7a1a00,#c0392b)}.t16{background:linear-gradient(135deg,#4a0050,#9b59b6)}.t24{background:linear-gradient(135deg,#12254f,#1f3a78)} 
+
+ 
+
+/* ── QUIZ ── */ 
+
+.quiz-block{background:linear-gradient(145deg,rgba(13,74,50,.5),rgba(8,40,28,.5));border:2px solid rgba(201,149,26,.25);border-radius:14px;padding:28px;margin-top:40px} 
+
+.quiz-title{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:var(--gold-l);margin-bottom:6px} 
+
+.quiz-prog{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:14px} 
+
+.quiz-q{font-size:15px;color:rgba(255,255,255,.88);line-height:1.7;margin-bottom:14px;font-weight:500} 
+
+.quiz-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px;margin-bottom:14px} 
+
+.quiz-opt{padding:11px 15px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);font-size:13px;color:rgba(255,255,255,.75);cursor:pointer;transition:all .2s;text-align:left;font-family:'Noto Sans TC',sans-serif} 
+
+.quiz-opt:hover:not(:disabled){border-color:var(--jade-l);background:rgba(45,158,111,.15);color:#fff} 
+
+.quiz-opt.correct{border-color:#2d9e6f!important;background:rgba(45,158,111,.25)!important;color:#7fffd4!important} 
+
+.quiz-opt.wrong{border-color:var(--red)!important;background:rgba(192,57,43,.2)!important;color:#ffaaaa!important} 
+
+.quiz-opt:disabled{cursor:default} 
+
+.quiz-fb{padding:12px 16px;border-radius:8px;font-size:13px;line-height:1.7;display:none;margin-bottom:12px} 
+
+.quiz-fb.show{display:block} 
+
+.quiz-fb.ok{background:rgba(45,158,111,.2);border:1px solid rgba(45,158,111,.4);color:#7fffd4} 
+
+.quiz-fb.bad{background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);color:#ffaaaa} 
+
+.quiz-nxt{padding:9px 20px;border-radius:7px;background:linear-gradient(135deg,var(--jade-d),var(--jade));border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Noto Sans TC',sans-serif;display:none} 
+
+.quiz-nxt.show{display:inline-block} 
+
+.quiz-nxt:hover{transform:translateY(-1px)} 
+
+.quiz-tile-r{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end} 
+
+.quiz-sets{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px} 
+
+.quiz-set-grp{display:flex;flex-direction:column;gap:4px} 
+
+.quiz-set-lbl{font-size:10px;color:rgba(255,255,255,.35)} 
+
+.quiz-set-row{display:flex;gap:3px} 
+
+.quiz-final{text-align:center;padding:16px;background:rgba(201,149,26,.1);border-radius:10px;display:none} 
+
+.quiz-final.show{display:block} 
+
+.quiz-big{font-family:'Noto Serif TC',serif;font-size:42px;font-weight:900;color:var(--gold-l)} 
+
+.quiz-retry{margin-top:12px;padding:8px 18px;border-radius:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);font-size:13px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .2s} 
+
+.quiz-retry:hover{background:rgba(255,255,255,.15);color:#fff} 
+
+ 
+
+/* ── SIMULATION TABLE ── */ 
+
+#simulation{padding:0 20px 70px} 
+
+.sim-wrap{max-width:1100px;margin:0 auto} 
+
+.sim-hdr{text-align:center;padding:60px 0 36px} 
+
+.sim-hdr h2{font-family:'Noto Serif TC',serif;font-size:clamp(22px,4vw,34px);font-weight:700;color:var(--gold-l);margin-bottom:6px} 
+
+.sim-hdr p{font-size:13px;color:var(--smoke)} 
+
+.mj-table{background:radial-gradient(ellipse at center,#1d7a4a,#0d4a2a,#082a18);border:6px solid #8b6914;border-radius:16px;box-shadow:0 0 0 2px var(--gold),0 20px 60px rgba(0,0,0,.7),inset 0 0 80px rgba(0,0,0,.3);padding:16px;min-height:560px;display:grid;grid-template-rows:auto 1fr auto auto;gap:10px} 
+
+.opp-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px} 
+
+.opp-zone{background:rgba(0,0,0,.22);border-radius:8px;padding:9px;text-align:center} 
+
+.opp-lbl{font-size:10px;color:rgba(255,255,255,.38);margin-bottom:5px;font-weight:600;letter-spacing:1px} 
+
+.opp-name{font-family:'Noto Serif TC',serif;font-size:12px;color:var(--gold-l);margin-bottom:7px} 
+
+.opp-row2{display:flex;gap:2px;justify-content:center;flex-wrap:wrap} 
+
+.tbl-ctr{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap} 
+
+.tbl-box{background:rgba(0,0,0,.38);border:1px solid rgba(201,149,26,.28);border-radius:9px;padding:10px 16px;text-align:center;min-width:90px} 
+
+.tbl-lbl{font-size:10px;color:rgba(255,255,255,.38);letter-spacing:1px;margin-bottom:3px} 
+
+.tbl-val{font-family:'Noto Serif TC',serif;font-size:19px;font-weight:700;color:var(--gold-l)} 
+
+.compass{width:72px;height:72px;border-radius:50%;border:2px solid rgba(201,149,26,.35);display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.38);position:relative} 
+
+.comp-ctr{font-family:'Noto Serif TC',serif;font-size:20px;font-weight:900;color:var(--gold-l)} 
+
+.comp-l{position:absolute;font-size:9px;color:rgba(255,255,255,.38);font-weight:600} 
+
+.cn{top:3px;left:50%;transform:translateX(-50%)}.cs{bottom:3px;left:50%;transform:translateX(-50%)}.ce{right:4px;top:50%;transform:translateY(-50%)}.cw{left:4px;top:50%;transform:translateY(-50%)} 
+
+.disc-zone{background:rgba(0,0,0,.18);border-radius:8px;padding:9px;min-height:54px} 
+
+.disc-lbl{font-size:10px;color:rgba(255,255,255,.28);letter-spacing:1px;margin-bottom:6px;text-align:center} 
+
+.disc-tiles{display:flex;flex-wrap:wrap;gap:4px;justify-content:center} 
+
+.plr-zone{background:rgba(0,0,0,.28);border-radius:10px;padding:12px;border:1px solid rgba(201,149,26,.18)} 
+
+.plr-lbl{font-size:10px;color:rgba(255,255,255,.38);letter-spacing:2px;text-align:center;margin-bottom:9px} 
+
+.plr-hand{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;margin-bottom:11px} 
+
+.plr-acts{display:flex;gap:7px;justify-content:center;flex-wrap:wrap} 
+
+.sbtn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;border:none;font-family:'Noto Sans TC',sans-serif} 
+
+.sbtn.d{background:linear-gradient(135deg,#a83220,#c0392b);color:#fff} 
+
+.sbtn.d:hover:not(:disabled){background:linear-gradient(135deg,#c0392b,#e74c3c);transform:translateY(-1px)} 
+
+.sbtn.a{background:rgba(201,149,26,.14);color:var(--gold-l);border:1px solid rgba(201,149,26,.38)} 
+
+.sbtn.a:hover:not(:disabled){background:rgba(201,149,26,.28);transform:translateY(-1px)} 
+
+.sbtn.h{background:linear-gradient(135deg,#1a6b4a,#2d9e6f);color:#fff;animation:hpulse 2s ease-in-out infinite} 
+
+@keyframes hpulse{0%,100%{box-shadow:0 0 0 0 rgba(26,107,74,.5)}50%{box-shadow:0 0 0 7px rgba(26,107,74,0)}} 
+
+.sbtn:disabled{opacity:.38;cursor:not-allowed;transform:none!important;animation:none} 
+
+.hu-hint{font-size:11px;color:var(--gold-l);text-align:center;padding:5px;background:rgba(201,149,26,.09);border-radius:6px;margin-bottom:7px;display:none} 
+
+.ng-btn{width:100%;margin-top:10px;padding:11px;background:linear-gradient(135deg,var(--jade-d),var(--jade));border:1px solid var(--jade-l);border-radius:8px;color:#fff;font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:1px} 
+
+.ng-btn:hover{background:linear-gradient(135deg,var(--jade),var(--jade-l));transform:translateY(-1px)} 
+
+.game-log{background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:14px;margin-top:14px;max-height:110px;overflow-y:auto} 
+
+.game-log::-webkit-scrollbar{width:3px} 
+
+.game-log::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:2px} 
+
+.log-hdr{font-size:10px;color:rgba(255,255,255,.28);letter-spacing:2px;margin-bottom:7px} 
+
+.log-e{font-size:12px;color:rgba(255,255,255,.58);padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.5} 
+
+.log-e.hl{color:var(--gold-l);font-weight:600}.log-e.ok{color:#2d9e6f}.log-e.err{color:var(--red)} 
+
+ 
+
+/* ── TIPS ── */ 
+
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px} 
+
+.tip-card{background:rgba(255,255,255,.03);border-left:3px solid var(--jade-l);border-radius:0 8px 8px 0;padding:14px 18px} 
+
+.tip-card h4{font-family:'Noto Serif TC',serif;font-size:14px;font-weight:700;color:var(--ivory);margin-bottom:7px} 
+
+.tip-card p{font-size:12px;color:rgba(255,255,255,.52);line-height:1.75} 
+
+ 
+
+/* ── TOAST & MODAL ── */ 
+
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(8,8,8,.96);border:1px solid rgba(201,149,26,.4);border-radius:10px;padding:12px 22px;font-size:13px;font-weight:600;color:var(--gold-l);z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;text-align:center;white-space:nowrap} 
+
+#toast.show{transform:translateX(-50%) translateY(0)} 
+
+#hu-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.87);z-index:8000;align-items:center;justify-content:center} 
+
+#hu-modal.show{display:flex} 
+
+.hu-inner{background:linear-gradient(145deg,#0d3a22,#1a5c3a);border:3px solid var(--gold);border-radius:20px;padding:36px;text-align:center;max-width:380px;width:90%;animation:modIn .5s cubic-bezier(.34,1.56,.64,1)} 
+
+@keyframes modIn{from{transform:scale(.7) rotate(-5deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}} 
+
+.hu-inner h2{font-family:'Noto Serif TC',serif;font-size:46px;font-weight:900;color:var(--gold-l);margin-bottom:6px;text-shadow:0 0 28px rgba(201,149,26,.5)} 
+
+.hu-inner p{font-size:15px;color:rgba(255,255,255,.68);margin-bottom:20px} 
+
+.hu-det{background:rgba(0,0,0,.28);border-radius:9px;padding:14px;margin-bottom:20px;text-align:left} 
+
+.hu-row{display:flex;justify-content:space-between;font-size:13px;color:rgba(255,255,255,.58);padding:3px 0} 
+
+.hu-row span{color:var(--gold-l);font-weight:700} 
+
+#snd-btn{position:fixed;bottom:18px;right:18px;z-index:999;background:rgba(8,8,8,.9);border:1px solid rgba(201,149,26,.38);border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:19px;transition:all .2s;backdrop-filter:blur(8px)} 
+
+#snd-btn:hover{border-color:var(--gold-l);transform:scale(1.1)} 
+
+.fi{opacity:0;transform:translateY(18px);transition:opacity .5s,transform .5s} 
+
+.fi.vis{opacity:1;transform:translateY(0)} 
+
+ 
+
+@media(max-width:600px){ 
+
+.mj-tile.pt{width:28px;height:40px} 
+
+.mj-tile.sm{width:24px;height:34px} 
+
+.opp-row{grid-template-columns:1fr} 
+
+.tbl-ctr{flex-direction:column} 
+
+.sec-num{font-size:46px} 
+
+.mj-table{padding:10px} 
+
+.scoring-table{font-size:11px} 
+
+.scoring-table th,.scoring-table td{padding:7px 9px} 
+
+.quiz-opts{grid-template-columns:1fr 1fr} 
+
+} 
+
+footer{text-align:center;padding:36px 20px;border-top:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.22);font-size:11px} 
+
+</style> 
+
+</head> 
+
+<body> 
+
+<nav id="topnav"><div class="nav-inner"> 
+
+<button class="nav-link" onclick="goTo('#tiles')">🀄 牌型</button> 
+
+<button class="nav-link" onclick="goTo('#rules')">📋 規則</button> 
+
+<button class="nav-link" onclick="goTo('#actions')">🖐 吃碰槓</button> 
+
+<button class="nav-link" onclick="goTo('#scoring')">🏆 台數</button> 
+
+<button class="nav-link" onclick="goTo('#patterns')">🎯 胡牌牌型</button> 
+
+<button class="nav-link" onclick="goTo('#simulation')">🎮 牌桌</button> 
+
+</div></nav> 
+
+<button id="snd-btn" onclick="toggleSound()">🔊</button> 
+
+<div id="toast"></div> 
+
+<div id="hu-modal"><div class="hu-inner"> 
+
+<h2>🎉 胡牌！</h2><p id="hu-msg"></p> 
+
+<div class="hu-det" id="hu-det"></div> 
+
+<button class="sbtn d" style="width:100%;padding:11px;font-size:14px" onclick="closeHu();newGame()">再來一局</button> 
+
+</div></div> 
+
+ 
+
+<section id="hero"><div class="hero-content"> 
+
+<div class="hero-badge">台灣麻將 · 完整教學</div> 
+
+<div class="hero-title">麻將全攻略</div> 
+
+<div class="hero-sub">從新手到高手的完整指南</div> 
+
+<div class="hero-show" id="hshow"></div> 
+
+<div class="hero-nav"> 
+
+<button class="hero-btn p" onclick="goTo('#tiles')">開始學習</button> 
+
+<button class="hero-btn s" onclick="goTo('#simulation')">直接上桌</button> 
+
+</div> 
+
+</div></section> 
+
+ 
+
+<div class="divider"></div> 
+
+<section id="tiles" class="section"> 
+
+<div class="sec-hdr fi"><div class="sec-num">01</div><div class="sec-title"><h2>認識牌型</h2><p>台灣麻將共 144 張，分為五大類</p></div></div> 
+
+<div class="grid2"> 
+
+<div class="cat-card fi"><div class="cat-title">🟡 萬子（36張）</div><div class="cat-desc">一萬到九萬，各4張。漢字書寫，數字配紅色「萬」字。</div><div class="tile-row" id="r-wan"></div></div> 
+
+<div class="cat-card fi"><div class="cat-title">🟢 條子（36張）</div><div class="cat-desc">一條到九條，各4張。竹節圖案，也稱「索子」。一條為特殊鳥圖案。</div><div class="tile-row" id="r-tiao"></div></div> 
+
+<div class="cat-card fi"><div class="cat-title">🔵 筒子（36張）</div><div class="cat-desc">一筒到九筒，各4張。彩色圓圈圖案，也稱「餅子」。</div><div class="tile-row" id="r-tong"></div></div> 
+
+<div class="cat-card fi"><div class="cat-title">🌀 風牌（16張）</div><div class="cat-desc">東南西北各4張，碰成刻子有台，本風牌加台。</div><div class="tile-row" id="r-feng"></div></div> 
+
+<div class="cat-card fi"><div class="cat-title">🀄 三元牌（12張）</div><div class="cat-desc">中（紅中）、發（發財）、白（白板）各4張，碰成刻子各1台。</div><div class="tile-row" id="r-yuan"></div></div> 
+
+<div class="cat-card fi"><div class="cat-title">🌸 花牌（8張）</div><div class="cat-desc">春夏秋冬、梅蘭竹菊各1張，抓到立即補牌，正花加台。</div><div class="tile-row" id="r-hua"></div></div> 
+
+</div> 
+
+<div class="quiz-block fi" id="q1"></div> 
+
+</section> 
+
+ 
+
+<div class="divider"></div> 
+
+<section id="rules" class="section"> 
+
+<div class="sec-hdr fi"><div class="sec-num">02</div><div class="sec-title"><h2>遊戲規則與流程</h2><p>台灣麻將 16 張牌制，胡牌需 5副＋1對將（共17張）</p></div></div> 
+
+<div class="rules-flow"> 
+
+<div class="rule-step fi"><div class="step-num">1</div><div><h3>抓位決定方位</h3><p>從牌中取出東南西北4張，蓋住洗混後隨機翻牌確定座位。莊家坐東，右邊南，對面西，左邊北。</p></div></div> 
+
+<div class="rule-step fi"><div class="step-num">2</div><div><h3>洗牌與疊牌</h3><p>全部144張面朝下洗亂，四面各砌2層每層18疊，共4面牌牆。</p></div></div> 
+
+<div class="rule-step fi"><div class="step-num">3</div><div><h3>開門抓牌</h3><p>莊家擲骰子決定開門位置，逆時針抓牌。每人4張×3輪=12張，再各補1張=13張，莊家多補1張=16張。閒家各16張，莊家17張起打。</p></div></div> 
+
+<div class="rule-step fi"><div class="step-num">4</div><div><h3>補花牌</h3><p>抓到花牌立即亮示並從牌尾補牌，直到無花牌為止。花牌不能打出，只計台數。</p></div></div> 
+
+<div class="rule-step fi"><div class="step-num">5</div><div><h3>摸牌與出牌</h3><p>由莊家起，逆時針輪流。輪到你時摸一張（共17張），打出一張（保持16張）。摸到花牌先補。</p></div></div> 
+
+<div class="rule-step fi"><div class="step-num">6</div><div><h3>吃、碰、槓</h3><p>別人打出牌時，可依規則吃（只能吃上家）、碰或槓。優先順序：胡牌＞槓牌＞碰牌＞吃牌。</p></div></div> 
+
+<div class="rule-step fi"><div class="step-num">7</div><div><h3>胡牌條件</h3><p>湊成「5副順子/刻子＋1對將」共17張。台灣麻將至少需1台才可胡。</p></div></div> 
+
+<div class="rule-step fi"><div class="step-num">8</div><div><h3>算台付款</h3><p>最終金額 = 底 + (台數 × 每台金額)</p><ul><li><strong>自摸（自己摸牌胡牌）</strong><br>規則：三家都要給你錢。<br>計算：每一家都要支付：(底注 + 台數金額)。因為是你自己贏的，所有人都得賠錢給你。</li><li><strong>放槍（你打出牌，別人胡了）</strong><br>規則：只有「放槍的人」要賠錢。<br>計算：放槍者需要支付：(底注 + 台數金額) 給胡牌的人。其他兩家不用賠。</li><li><strong>莊家與連莊（獎勵機制）</strong><br>規則：莊家享有特權（胡牌多賺、輸牌多賠）。<br>計算：莊家每連莊一次，會產生額外的「連莊台數」，胡牌時台數會更多，若被胡牌，賠償的金額也需要加乘。</li></ul></div></div> 
+
+</div> 
+
+<div class="quiz-block fi" id="q2"></div> 
+
+</section> 
+
+ 
+
+<div class="divider"></div> 
+
+<section id="actions" class="section"> 
+
+<div class="sec-hdr fi"><div class="sec-num">03</div><div class="sec-title"><h2>吃、碰、槓詳解</h2><p>掌握特殊動作，靈活調整手牌</p></div></div> 
+
+<div class="grid3"> 
+
+<div class="act-card fi"><div class="act-icon">🍜</div><h3>吃牌</h3><p>只能吃<b style="color:var(--gold-l)">上家</b>打出的牌，配手中兩張相鄰同花色牌組成順子，吃後需打出一張。</p><div class="tile-row" id="r-chi"></div></div> 
+
+<div class="act-card fi"><div class="act-icon">💪</div><h3>碰牌</h3><p>任何家打出的牌，手中有相同的<b style="color:var(--gold-l)">2張</b>可碰成刻子（3張相同），碰後打出一張。</p><div class="tile-row" id="r-pon"></div></div> 
+
+<div class="act-card fi"><div class="act-icon">🀄</div><h3>明槓</h3><p>別人打出你手中已有<b style="color:var(--gold-l)">3張</b>相同的牌，可明槓組成4張，槓後補牌加1台。</p><div class="tile-row" id="r-gng"></div></div> 
+
+<div class="act-card fi"><div class="act-icon">🔒</div><h3>暗槓</h3><p>自己摸到第4張相同的牌，可暗槓。不破門清，且加台，槓後補牌。</p></div> 
+
+<div class="act-card fi"><div class="act-icon">🔄</div><h3>加槓</h3><p>已碰的刻子，摸到第4張相同牌可加槓。加槓補牌，但其他人可<b style="color:var(--red)">搶槓胡</b>！</p></div> 
+
+<div class="act-card fi"><div class="act-icon">🚫</div><h3>過水</h3><p>聽牌下別人打出胡牌所需之牌卻未胡，稱過水。之後同一張牌<b style="color:var(--red)">無法再胡</b>。</p></div> 
+
+</div> 
+
+<div class="quiz-block fi" id="q3"></div> 
+
+</section> 
+
+ 
+
+<div class="divider"></div> 
+
+<section id="scoring" class="section"> 
+
+<div class="sec-hdr fi"><div class="sec-num">04</div><div class="sec-title"><h2>台數計算</h2><p>台數越多，贏得越多！</p></div></div> 
+
+<div class="score-wrap fi"><table class="scoring-table"><thead><tr><th>牌型 / 條件</th><th>台數</th><th>說明</th></tr></thead><tbody> 
+
+<tr><td>獨聽</td><td><span class="tb t1">1 台</span></td><td>單吊、邊章、中洞</td></tr> 
+
+<tr><td>場風</td><td><span class="tb t1">1 台</span></td><td>與當局圈風相同的風牌</td></tr> 
+
+<tr><td>本風</td><td><span class="tb t1">1 台</span></td><td>與自己座位相同的風牌</td></tr> 
+
+<tr><td>箭牌</td><td><span class="tb t1">1 台</span></td><td>中、發、白</td></tr> 
+
+<tr><td>正花</td><td><span class="tb t1">1 台</span></td><td>拿到對應座位的正花</td></tr> 
+
+<tr><td>花槓</td><td><span class="tb t1">1 台</span></td><td>湊齊 1 組花牌（梅蘭菊竹或春夏秋冬）</td></tr> 
+
+<tr><td>搶槓</td><td><span class="tb t1">1 台</span></td><td>胡別人剛槓的牌</td></tr> 
+
+<tr><td>門清</td><td><span class="tb t1">1 台</span></td><td>胡牌時沒有吃、碰、明槓</td></tr> 
+
+<tr><td>自摸</td><td><span class="tb t1">1 台</span></td><td>自己摸到胡牌的牌</td></tr> 
+
+<tr><td>槓上自摸</td><td><span class="tb t1">1 台</span></td><td>槓牌後自己摸到胡牌的牌</td></tr> 
+
+<tr><td>海底撈月</td><td><span class="tb t1">1 台</span></td><td>摸到最後一張牌時自摸</td></tr> 
+
+<tr><td>全求人</td><td><span class="tb t1">1 台</span></td><td>只剩 1 張狀態下胡牌時，其餘全吃、碰（加上獨聽合計 2 台）</td></tr> 
+
+<tr><td>不求人</td><td><span class="tb t1">1 台</span></td><td>完全沒吃、碰的情況下自摸</td></tr> 
+
+<tr><td>莊家</td><td><span class="tb t1">1 台</span></td><td>基礎計算 1 台（連莊 2N+1 台）</td></tr> 
+
+<tr><td>平胡</td><td><span class="tb t2">2 台</span></td><td>胡牌時僅由順子及 1 對將牌組成，無花牌、字牌</td></tr> 
+
+<tr><td>三暗刻</td><td><span class="tb t1">1 台</span></td><td>胡牌時有 3 組暗刻</td></tr> 
+
+<tr><td>門清一摸三</td><td><span class="tb t3">3 台</span></td><td>門清、自摸、不求人同時成立，共 3 台</td></tr> 
+
+<tr><td>混一色</td><td><span class="tb t4">4 台</span></td><td>全部牌只含 1 種花色（萬、筒、索）和字牌</td></tr> 
+
+<tr><td>碰碰胡</td><td><span class="tb t4">4 台</span></td><td>所有牌都是刻子、槓子與對子</td></tr> 
+
+<tr><td>小三元</td><td><span class="tb t4">4 台</span></td><td>有紅中、發財、白板其中 2 組刻子與 1 組對子</td></tr> 
+
+<tr><td>四暗刻</td><td><span class="tb t5">5 台</span></td><td>胡牌時有 4 組暗刻</td></tr> 
+
+<tr><td>清一色</td><td><span class="tb t8">8 台</span></td><td>全部牌只含 1 種花色（萬、筒、索）</td></tr> 
+
+<tr><td>小四喜</td><td><span class="tb t8">8 台</span></td><td>有東、南、西、北 4 種風牌中的 3 組刻子與 1 組對子</td></tr> 
+
+<tr><td>大三元</td><td><span class="tb t8">8 台</span></td><td>有紅中、發財、白板各 1 組刻子</td></tr> 
+
+<tr><td>五暗刻</td><td><span class="tb t8">8 台</span></td><td>胡牌時有 5 組刻</td></tr> 
+
+<tr><td>八仙過海</td><td><span class="tb t8">8 台</span></td><td>集齊 8 張花牌</td></tr> 
+
+<tr><td>七搶一</td><td><span class="tb t8">8 台</span></td><td>手上有 7 張花牌，另一玩家摸到第 8 張花牌，即可搶花</td></tr> 
+
+<tr><td>地聽</td><td><span class="tb t8">8 台</span></td><td>第 1 巡摸牌後，無人吃碰，即宣告聽牌</td></tr> 
+
+<tr><td>字一色</td><td><span class="tb t16">16 台</span></td><td>全部牌都是字牌</td></tr> 
+
+<tr><td>地胡</td><td><span class="tb t16">16 台</span></td><td>莊家以外的玩家在第 1 輪就自摸胡牌</td></tr> 
+
+<tr><td>人胡</td><td><span class="tb t16">16 台</span></td><td> 閒家還未摸到牌，且其他家未吃、碰、槓、暗槓，就胡了對手打出的牌</td></tr> 
+
+<tr><td>天聽</td><td><span class="tb t16">16 台</span></td><td> 配牌後，莊家捨出第 1 張牌時宣告聽牌</td></tr> 
+
+<tr><td>大四喜</td><td><span class="tb t16">16 台</span></td><td>手牌中有 4 種風牌的刻子</td></tr> 
+
+<tr><td>天胡</td><td><span class="tb t24">24 台</span></td><td>莊家開門補完花後 17 張牌為胡牌牌型</td></tr> 
+
+</tbody></table></div> 
+
+<div class="quiz-block fi" id="q4"></div> 
+
+</section> 
+
+ 
+
+<div class="divider"></div> 
+
+<section id="patterns" class="section"> 
+
+<div class="sec-hdr fi"><div class="sec-num">05</div><div class="sec-title"><h2>常見胡牌牌型</h2><p>了解各種牌型，設定做牌方向</p></div></div> 
+
+<div class="grid4"> 
+
+<div class="pat-card fi"><h3>平胡</h3><p>最基礎胡法，4組順/刻子＋1對將。</p><div class="tile-row" id="p-phu"></div></div> 
+
+<div class="pat-card fi"><h3>清一色</h3><p>整副牌全部同一花色，無字牌。</p><div class="tile-row" id="p-qys"></div></div> 
+
+<div class="pat-card fi"><h3>對對胡</h3><p>4組刻子＋1對將，對子多時好選擇。</p><div class="tile-row" id="p-ddh"></div></div> 
+
+<div class="pat-card fi"><h3>七對子</h3><p>7組對子，必須門清。</p><div class="tile-row" id="p-qds"></div></div> 
+
+<div class="pat-card fi"><h3>大三元</h3><p>中發白三組全做刻子，極高分。</p><div class="tile-row" id="p-dsy"></div></div> 
+
+<div class="pat-card fi"><h3>混一色</h3><p>同一花色數牌加字牌，較清一色容易。</p><div class="tile-row" id="p-hys"></div></div> 
+
+<div class="pat-card fi"><h3>小四喜</h3><p>風牌三組刻子＋一對風牌。</p><div class="tile-row" id="p-sxs"></div></div> 
+
+<div class="pat-card fi"><h3>四暗刻</h3><p>4組暗刻＋1對將，是高分門清牌型。</p><div class="tile-row" id="p-sac"></div></div> 
+
+<div class="pat-card fi"><h3>字一色</h3><p>全部由字牌組成，風牌與箭牌皆可。</p><div class="tile-row" id="p-zys"></div></div> 
+
+</div> 
+
+<div class="quiz-block fi" id="q5"></div> 
+
+</section> 
+
+ 
+
+<div class="divider"></div> 
+
+<section id="simulation"> 
+
+<div class="sim-wrap"> 
+
+<div class="sim-hdr fi"><h2>🎮 模擬牌桌</h2><p>點擊下方按鈕前往模擬牌桌，或使用「人機對戰」快速切換。</p></div> 
+
+<div style="text-align:center;padding:60px 0; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;"> 
+<a class="ng-btn" href="16_pro (4).html" style="text-decoration:none;display:inline-block;">🀄 前往模擬牌桌</a> 
+<a class="ng-btn" href="人機.html" style="text-decoration:none;display:inline-block;">🤖 人機對戰</a> 
+</div> 
+
+<div class="sim-ui" style="display:none;"> 
+
+<div class="mj-table fi"> 
+
+<div class="opp-row"> 
+
+<div class="opp-zone"><div class="opp-lbl">西家</div><div class="opp-name">玩家西</div><div class="opp-row2" id="ow"></div></div> 
+
+<div class="opp-zone"><div class="opp-lbl">北家（對家）</div><div class="opp-name">玩家北</div><div class="opp-row2" id="on"></div></div> 
+
+<div class="opp-zone"><div class="opp-lbl">東家</div><div class="opp-name">玩家東</div><div class="opp-row2" id="oe"></div></div> 
+
+</div> 
+
+<div class="tbl-ctr"> 
+
+<div class="tbl-box"><div class="tbl-lbl">牌堆剩餘</div><div class="tbl-val" id="dct">--</div></div> 
+
+<div class="compass"><span class="comp-l cn">北</span><span class="comp-l cs">南</span><span class="comp-l ce">東</span><span class="comp-l cw">西</span><div class="comp-ctr">東</div></div> 
+
+<div class="tbl-box"><div class="tbl-lbl">輪到</div><div class="tbl-val" id="ctrn">--</div></div> 
+
+<div class="tbl-box"><div class="tbl-lbl">莊家</div><div class="tbl-val">你</div></div> 
+
+</div> 
+
+<div class="disc-zone"><div class="disc-lbl">棄牌區</div><div class="disc-tiles" id="darea"></div></div> 
+
+<div class="plr-zone"> 
+
+<div class="plr-lbl">你的手牌（南家）</div> 
+
+<div class="hu-hint" id="huhint">✨ 偵測到可胡牌型！按「胡牌」確認</div> 
+
+<div class="plr-hand" id="phand"></div> 
+
+<div class="plr-acts"> 
+
+<button class="sbtn d" id="bdis" onclick="discSel()" disabled>出牌</button> 
+
+<button class="sbtn a" id="bchi" onclick="doAct('chi')" disabled>吃牌</button> 
+
+<button class="sbtn a" id="bpon" onclick="doAct('pon')" disabled>碰牌</button> 
+
+<button class="sbtn a" id="bgng" onclick="doAct('gng')" disabled>槓牌</button> 
+
+<button class="sbtn h" id="bhu" onclick="doHu()" disabled>胡牌</button> 
+
+</div> 
+
+</div> 
+
+<button class="ng-btn" onclick="newGame()">🀄 新局開始</button> 
+
+</div> 
+
+<div class="game-log" id="glog"><div class="log-hdr">遊戲紀錄</div></div> 
+
+</div> 
+
+</div> 
+
+</section> 
+
+ 
+
+<footer><p>台灣麻將全攻略 · 規則參考：雀神麻將桌官網、台灣麻將協會、多方資料交叉驗證</p><p style="margin-top:6px;color:rgba(255,255,255,.12)">麻將小賭怡情，請勿沉迷賭博</p></footer> 
+
+ 
+
+<script> 
+
+// ═══════════════════════════════════════════ 
+
+// SOUND ENGINE 
+
+// ═══════════════════════════════════════════ 
+
+let AC=null,sndOn=true; 
+
+document.addEventListener('click',()=>{if(!AC)try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}},{once:true}); 
+
+function resumeAC(){if(AC&&AC.state==='suspended')AC.resume();} 
+
+function beep(type){ 
+
+resumeAC();if(!sndOn||!AC)return; 
+
+try{ 
+
+const t=AC.currentTime,g=AC.createGain();g.connect(AC.destination); 
+
+if(type==='draw'){ 
+
+const o=AC.createOscillator();o.connect(g); 
+
+o.frequency.setValueAtTime(880,t);o.frequency.exponentialRampToValueAtTime(440,t+.12); 
+
+g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+.18); 
+
+o.start(t);o.stop(t+.18); 
+
+}else if(type==='discard'){ 
+
+const o=AC.createOscillator();o.type='square';o.connect(g); 
+
+o.frequency.setValueAtTime(200,t); 
+
+g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.14); 
+
+o.start(t);o.stop(t+.14); 
+
+}else if(type==='pon'){ 
+
+[660,880].forEach((f,i)=>{ 
+
+const o=AC.createOscillator(),gi=AC.createGain();o.connect(gi);gi.connect(AC.destination); 
+
+o.frequency.value=f;const ti=t+i*.09; 
+
+gi.gain.setValueAtTime(.22,ti);gi.gain.exponentialRampToValueAtTime(.001,ti+.25); 
+
+o.start(ti);o.stop(ti+.25);}); 
+
+}else if(type==='hu'){ 
+
+[523,659,784,1047].forEach((f,i)=>{ 
+
+const o=AC.createOscillator(),gi=AC.createGain();o.connect(gi);gi.connect(AC.destination); 
+
+o.frequency.value=f;const ti=t+i*.1; 
+
+gi.gain.setValueAtTime(.28,ti);gi.gain.exponentialRampToValueAtTime(.001,ti+.45); 
+
+o.start(ti);o.stop(ti+.45);}); 
+
+}else if(type==='err'){ 
+
+const o=AC.createOscillator();o.type='sawtooth';o.connect(g); 
+
+o.frequency.setValueAtTime(130,t); 
+
+g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+.22); 
+
+o.start(t);o.stop(t+.22); 
+
+}else if(type==='click'){ 
+
+const o=AC.createOscillator();o.connect(g); 
+
+o.frequency.setValueAtTime(600,t); 
+
+g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.08); 
+
+o.start(t);o.stop(t+.08); 
+
+} 
+
+}catch(e){} 
+
+} 
+
+function toggleSound(){sndOn=!sndOn;document.getElementById('snd-btn').textContent=sndOn?'🔊':'🔇';toast(sndOn?'🔊 音效已開啟':'🔇 音效已關閉');} 
+
+ 
+
+// ═══════════════════════════════════════════ 
+
+// 3D TILE SVG ENGINE (REPLACED WITH ARTIFACT'S FLAT ARTWORK) 
+
+// ═══════════════════════════════════════════ 
+
+const colors = { 
+
+green: '#15803d', greenShadow: '#0f5127', 
+
+red: '#c8102e', redShadow: '#8a0a1f', 
+
+blue: '#0f52ba', blueShadow: '#0a357a', 
+
+black: '#1f2937', blackShadow: '#111827' 
+
+}; 
+
+ 
+
+function renderBambooStick(x, y, angle = 0, colorType = 'green') { 
+
+const primary = colorType === 'green' ? colors.green : (colorType === 'blue' ? colors.blue : colors.red); 
+
+const shadow = colorType === 'green' ? colors.greenShadow : (colorType === 'blue' ? colors.blueShadow : colors.redShadow); 
+
+return ` 
+
+<g transform="translate(${x}, ${y}) rotate(${angle})"> 
+
+<path d="M -5 -16 L 5 -16 Q 7 -16 7 -12 Q 5 -5 5 0 Q 5 5 7 12 Q 7 16 5 16 L -5 16 Q -7 16 -7 12 Q -5 5 -5 0 Q -5 -5 -7 -12 Q -7 -16 -5 -16 Z" fill="${shadow}" /> 
+
+<path d="M -3.5 -14.5 L 3.5 -14.5 Q 5 -14.5 5 -11 Q 3.5 -4 3.5 0 Q 3.5 4 5 11 Q 5 14.5 3.5 14.5 L -3.5 14.5 Q -5 14.5 -5 11 Q -3.5 4 -3.5 0 Q -3.5 -4 -5 -11 Q -5 -14.5 -3.5 -14.5 Z" fill="${primary}" /> 
+
+<line x1="0" y1="-11" x2="0" y2="11" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="4,3" /> 
+
+<circle cx="0" cy="0" r="2.2" fill="#ffffff" /> 
+
+</g>`; 
+
+} 
+
+ 
+
+function renderPeacock() { 
+
+return ` 
+
+<g transform="translate(50, 72) scale(1.05)"> 
+
+<path d="M-30,-5 C-42,-30 -10,-45 0,-40 C10,-45 42,-30 30,-5 Z" fill="#0f766e" /> 
+
+<circle cx="-24" cy="-24" r="4.5" fill="#eab308" /> 
+
+<circle cx="-24" cy="-24" r="2" fill="#b91c1c" /> 
+
+<circle cx="24" cy="-24" r="4.5" fill="#eab308" /> 
+
+<circle cx="24" cy="-24" r="2" fill="#b91c1c" /> 
+
+<circle cx="0" cy="-34" r="5" fill="#eab308" /> 
+
+<circle cx="0" cy="-34" r="2.5" fill="#1d4ed8" /> 
+
+<path d="M-20,5 C-26,20 -10,32 5,28 C15,25 18,12 12,0 Z" fill="#b91c1c" /> 
+
+<path d="M20,5 C26,20 10,32 -5,28 C-15,25 -18,12 -12,0 Z" fill="#15803d" /> 
+
+<path d="M-12,-15 C-12,5 -5,24 0,24 C5,24 12,5 12,-15 Z" fill="#1d4ed8" /> 
+
+<path d="M-8,-10 C-8,5 -3,18 0,18 C3,18 8,5 8,-10 Z" fill="#ffffff" opacity="0.3" /> 
+
+<path d="M-4,-15 C-4,-28 -2,-32 0,-36 C2,-32 4,-28 4,-15 Z" fill="#1d4ed8" /> 
+
+<circle cx="0" cy="-34" r="5.5" fill="#1d4ed8" /> 
+
+<circle cx="-2" cy="-35" r="1.5" fill="#ffffff" /> 
+
+<circle cx="-2" cy="-35" r="0.7" fill="#000000" /> 
+
+<circle cx="2" cy="-35" r="1.5" fill="#ffffff" /> 
+
+<circle cx="2" cy="-35" r="0.7" fill="#000000" /> 
+
+<polygon points="0,-32 -3,-28 3,-28" fill="#eab308" /> 
+
+<line x1="-5" y1="24" x2="-8" y2="34" stroke="#eab308" stroke-width="3" stroke-linecap="round" /> 
+
+<line x1="5" y1="24" x2="8" y2="34" stroke="#eab308" stroke-width="3" stroke-linecap="round" /> 
+
+</g>`; 
+
+} 
+
+ 
+
+function renderDot(cx, cy, r, primaryColor = 'blue', accentColor = 'red') { 
+
+const p = colors[primaryColor]; 
+
+const a = colors[accentColor]; 
+
+let spokes = ''; 
+
+const spokeCount = 8; 
+
+for (let i = 0; i < spokeCount; i++) { 
+
+let angle = (i * 360 / spokeCount) * Math.PI / 180; 
+
+let x1 = cx + (r * 0.3) * Math.cos(angle); 
+
+let y1 = cy + (r * 0.3) * Math.sin(angle); 
+
+let x2 = cx + (r * 0.72) * Math.cos(angle); 
+
+let y2 = cy + (r * 0.72) * Math.sin(angle); 
+
+spokes += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="${r * 0.12}" stroke-linecap="round" />`; 
+
+} 
+
+return ` 
+
+<g> 
+
+<circle cx="${cx}" cy="${cy}" r="${r}" fill="#111827" opacity="0.15" /> 
+
+<circle cx="${cx}" cy="${cy}" r="${r * 0.95}" fill="${p}" /> 
+
+<circle cx="${cx}" cy="${cy}" r="${r * 0.8}" fill="none" stroke="#ffffff" stroke-width="${r * 0.08}" opacity="0.9" /> 
+
+<circle cx="${cx}" cy="${cy}" r="${r * 0.45}" fill="${a}" /> 
+
+${spokes} 
+
+<circle cx="${cx}" cy="${cy}" r="${r * 0.16}" fill="#ffffff" /> 
+
+</g>`; 
+
+} 
+
+ 
+
+function renderBigDot() { 
+
+let pattern = ''; 
+
+for (let i = 0; i < 16; i++) { 
+
+let angle = (i * 22.5) * Math.PI / 180; 
+
+let x1 = 50 + 12 * Math.cos(angle); 
+
+let y1 = 70 + 12 * Math.sin(angle); 
+
+let x2 = 50 + 26 * Math.cos(angle); 
+
+let y2 = 70 + 26 * Math.sin(angle); 
+
+pattern += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${colors.red}" stroke-width="4.5" stroke-linecap="round" />`; 
+
+pattern += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />`; 
+
+} 
+
+return ` 
+
+<g> 
+
+<circle cx="50" cy="70" r="34" fill="${colors.blue}" /> 
+
+<circle cx="50" cy="70" r="31" fill="none" stroke="#ffffff" stroke-width="1.5" /> 
+
+${pattern} 
+
+<circle cx="50" cy="70" r="11" fill="${colors.green}" /> 
+
+<circle cx="50" cy="70" r="7" fill="#ffffff" /> 
+
+<circle cx="50" cy="70" r="3" fill="${colors.red}" /> 
+
+</g>`; 
+
+} 
+
+ 
+
+function renderCharacter(numText, colorVal = '#111827') { 
+
+return ` 
+
+<g> 
+
+<text x="50" y="46" font-family="'Noto Serif TC', serif" font-weight="900" font-size="34" fill="${colorVal}" text-anchor="middle" dominant-baseline="middle">${numText}</text> 
+
+<text x="51.5" y="103.5" font-family="'Noto Serif TC', serif" font-weight="900" font-size="44" fill="${colors.redShadow}" text-anchor="middle" dominant-baseline="middle" opacity="0.3">萬</text> 
+
+<text x="50" y="102" font-family="'Noto Serif TC', serif" font-weight="900" font-size="44" fill="${colors.red}" text-anchor="middle" dominant-baseline="middle">萬</text> 
+
+</g>`; 
+
+} 
+
+ 
+
+function renderWindOrDragon(text, isDragon = false, charColor = '#111827') { 
+
+const fontSz = isDragon ? 54 : 48; 
+
+const shadowC = charColor === colors.red ? '#7f1d1d' : (charColor === colors.green ? '#14532d' : '#1e293b'); 
+
+if (text === '白') { 
+
+return ` 
+
+<g> 
+
+<rect x="18" y="22" width="64" height="96" rx="6" fill="none" stroke="${colors.blue}" stroke-width="6" /> 
+
+<rect x="23" y="27" width="54" height="86" rx="4" fill="none" stroke="#ffffff" stroke-width="2" /> 
+
+<rect x="27" y="31" width="46" height="78" rx="2" fill="none" stroke="${colors.blue}" stroke-width="2" /> 
+
+<path d="M22,34 L28,34 L28,28 M78,34 L72,34 L72,28 M22,106 L28,106 L28,112 M78,106 L72,106 L72,112" stroke="${colors.blue}" stroke-width="2" fill="none"/> 
+
+</g>`; 
+
+} 
+
+return ` 
+
+<g> 
+
+<text x="51.5" y="73.5" font-family="'Noto Serif TC', serif" font-weight="900" font-size="${fontSz}" fill="${shadowC}" text-anchor="middle" dominant-baseline="middle" opacity="0.3">${text}</text> 
+
+<text x="50" y="72" font-family="'Noto Serif TC', serif" font-weight="900" font-size="${fontSz}" fill="${charColor}" text-anchor="middle" dominant-baseline="middle">${text}</text> 
+
+</g>`; 
+
+} 
+
+ 
+
+function renderFlower(text, num, isSeason) { 
+
+const textColor = isSeason ? colors.red : colors.black; 
+
+const numColor = isSeason ? colors.black : colors.red; 
+
+let illustration = ''; 
+
+switch(text) { 
+
+case '春': illustration = `<g transform="translate(50, 85)"><path d="M-10,15 C-2,10 -5,-5 -2,-18 C2,-5 -1,10 10,15" stroke="${colors.green}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="2" cy="-10" r="5" fill="#f43f5e" /><circle cx="-6" cy="-2" r="4.5" fill="#f43f5e" /><circle cx="7" cy="2" r="4.5" fill="#f43f5e" /><circle cx="1" cy="-2" r="3" fill="#fef08a" /></g>`; break; 
+
+case '夏': illustration = `<g transform="translate(50, 90) scale(0.9)"><path d="M-18,10 Q0,25 18,10 Q12,-5 0,-15 Q-12,-5 -18,10 Z" fill="#22c55e" opacity="0.6"/><path d="M-5,10 C-10,-5 0,-25 0,-25 C0,-25 10,-5 5,10 Z" fill="#ec4899" /><path d="M-10,10 C-14,0 -2,-15 -2,-15 C-2,-15 10,0 6,10 Z" fill="#f472b6" opacity="0.9"/></g>`; break; 
+
+case '秋': illustration = `<g transform="translate(50, 85) scale(0.9)"><path d="M0,20 L0,-15 M0,-5 L-12,-12 M0,3 L12,-8 M0,-5 L15,10 M0,3 L-15,12" stroke="#b45309" stroke-width="2.5" /><path d="M0,-16 L-4,-6 L-14,-8 L-6,0 L-10,10 L0,4 L10,10 L6,0 L14,-8 L4,-6 Z" fill="#ea580c" /></g>`; break; 
+
+case '冬': illustration = `<g transform="translate(50, 85)"><circle cx="0" cy="5" r="14" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4,2" /><path d="M-12,12 L12,-12" stroke="#475569" stroke-width="3.5" stroke-linecap="round" /><circle cx="2" cy="-2" r="5" fill="#e11d48" /><circle cx="-6" cy="6" r="4" fill="#e11d48" /><circle cx="2" cy="-2" r="1.5" fill="#ffffff" /></g>`; break; 
+
+case '梅': illustration = `<g transform="translate(50, 85)"><path d="M-10,15 Q5,5 0,-15" fill="none" stroke="#7c2d12" stroke-width="3.5" stroke-linecap="round" /><circle cx="-4" cy="5" r="5" fill="${colors.red}" /><circle cx="2" cy="-6" r="6" fill="${colors.red}" /><circle cx="2" cy="-6" r="1.5" fill="#fef08a" /></g>`; break; 
+
+case '蘭': illustration = `<g transform="translate(50, 85)"><path d="M-18,15 Q-10,-10 12,-18 M-8,15 Q10,-2 5,-14" fill="none" stroke="${colors.green}" stroke-width="2" stroke-linecap="round" /><path d="M3,-6 Q15,-10 10,-2 Q2,1 3,-6 Z" fill="#a855f7" /><circle cx="7" cy="-4" r="2.5" fill="#fef08a" /></g>`; break; 
+
+case '竹': illustration = `<g transform="translate(50, 85)"><line x1="-4" y1="18" x2="-2" y2="-15" stroke="${colors.green}" stroke-width="4.5" /><line x1="-4" y1="2" x2="10" y2="-6" stroke="${colors.green}" stroke-width="2" /><path d="M6,-8 L15,-18 Q12,-10 8,-8 Z" fill="${colors.green}" /><path d="M2,-5 L10,-12 Q8,-7 4,-5 Z" fill="${colors.green}" /><line x1="-7" y1="2" x2="-1" y2="3" stroke="#ffffff" stroke-width="1.5" /></g>`; break; 
+
+case '菊': illustration = `<g transform="translate(50, 85) scale(0.9)"><circle cx="0" cy="0" r="6" fill="#eab308" /><path d="M0,0 Q-8,-15 0,-20 Q8,-15 0,0" fill="#f97316" /><path d="M0,0 Q-15,-8 -20,0 Q-15,8 0,0" fill="#f97316" /><path d="M0,0 Q8,15 0,20 Q-8,15 0,0" fill="#f97316" /><path d="M0,0 Q15,8 20,0 Q15,-8 0,0" fill="#f97316" /><path d="M0,0 L-10,-10 M0,0 L10,10 M0,0 L-10,10 M0,0 L10,-10" stroke="#f97316" stroke-width="3" /></g>`; break; 
+
+} 
+
+return ` 
+
+<g> 
+
+<text x="22" y="32" font-family="'Noto Serif TC', serif" font-weight="900" font-size="24" fill="${numColor}" text-anchor="start">${num}</text> 
+
+<text x="78" y="32" font-family="'Noto Serif TC', serif" font-weight="900" font-size="28" fill="${textColor}" text-anchor="end">${text}</text> 
+
+${illustration} 
+
+</g>`; 
+
+} 
+
+ 
+
+function tileSVGContent(name) { 
+
+const WAN = ['一萬','二萬','三萬','四萬','五萬','六萬','七萬','八萬','九萬']; 
+
+const TONG = ['一筒','二筒','三筒','四筒','五筒','六筒','七筒','八筒','九筒']; 
+
+const TIAO = ['一條','二條','三條','四條','五條','六條','七條','八條','九條']; 
+
+const NUMS = ['一','二','三','四','五','六','七','八','九']; 
+
+ 
+
+if (WAN.includes(name)) { 
+
+const i = WAN.indexOf(name); 
+
+return renderCharacter(NUMS[i]); 
+
+} 
+
+if (TONG.includes(name)) { 
+
+switch(name) { 
+
+case '一筒': return renderBigDot(); 
+
+case '二筒': return renderDot(50, 38, 16, 'green', 'red') + renderDot(50, 102, 16, 'blue', 'red'); 
+
+case '三筒': return renderDot(26, 34, 11, 'blue', 'red') + renderDot(50, 70, 11, 'red', 'green') + renderDot(74, 106, 11, 'green', 'red'); 
+
+case '四筒': return renderDot(32, 38, 13, 'green', 'red') + renderDot(68, 38, 13, 'blue', 'red') + renderDot(32, 102, 13, 'blue', 'red') + renderDot(68, 102, 13, 'green', 'red'); 
+
+case '五筒': return renderDot(26, 34, 11, 'blue', 'red') + renderDot(74, 34, 11, 'green', 'red') + renderDot(50, 70, 12, 'red', 'green') + renderDot(26, 106, 11, 'green', 'red') + renderDot(74, 106, 11, 'blue', 'red'); 
+
+case '六筒': return renderDot(32, 34, 11, 'green', 'red') + renderDot(68, 34, 11, 'green', 'red') + renderDot(32, 70, 11, 'red', 'green') + renderDot(68, 70, 11, 'red', 'green') + renderDot(32, 106, 11, 'blue', 'red') + renderDot(68, 106, 11, 'blue', 'red'); 
+
+case '七筒': return renderDot(26, 26, 9, 'green', 'red') + renderDot(50, 42, 9, 'green', 'red') + renderDot(74, 58, 9, 'green', 'red') + renderDot(32, 94, 11, 'blue', 'red') + renderDot(68, 94, 11, 'blue', 'red') + renderDot(32, 122, 11, 'blue', 'red') + renderDot(68, 122, 11, 'blue', 'red'); 
+
+case '八筒': return renderDot(32, 28, 10, 'blue', 'red') + renderDot(68, 28, 10, 'blue', 'red') + renderDot(32, 56, 10, 'blue', 'red') + renderDot(68, 56, 10, 'blue', 'red') + renderDot(32, 84, 10, 'blue', 'red') + renderDot(68, 84, 10, 'blue', 'red') + renderDot(32, 112, 10, 'blue', 'red') + renderDot(68, 112, 10, 'blue', 'red'); 
+
+case '九筒': return renderDot(26, 32, 10, 'green', 'red') + renderDot(50, 32, 10, 'green', 'red') + renderDot(74, 32, 10, 'green', 'red') + renderDot(26, 70, 10, 'red', 'green') + renderDot(50, 70, 10, 'red', 'green') + renderDot(74, 70, 10, 'red', 'green') + renderDot(26, 108, 10, 'blue', 'red') + renderDot(50, 108, 10, 'blue', 'red') + renderDot(74, 108, 10, 'blue', 'red'); 
+
+} 
+
+} 
+
+if (TIAO.includes(name)) { 
+
+switch(name) { 
+
+case '一條': return renderPeacock(); 
+
+case '二條': return renderBambooStick(36, 70, 0) + renderBambooStick(64, 70, 0); 
+
+case '三條': return renderBambooStick(50, 42, 0) + renderBambooStick(34, 98, 0, 'blue') + renderBambooStick(66, 98, 0, 'blue'); 
+
+case '四條': return renderBambooStick(34, 42, 0) + renderBambooStick(66, 42, 0) + renderBambooStick(34, 98, 0, 'blue') + renderBambooStick(66, 98, 0, 'blue'); 
+
+case '五條': return renderBambooStick(26, 40, 0) + renderBambooStick(74, 40, 0) + renderBambooStick(50, 70, 0, 'red') + renderBambooStick(26, 100, 0) + renderBambooStick(74, 100, 0); 
+
+case '六條': return renderBambooStick(34, 34, 0) + renderBambooStick(66, 34, 0) + renderBambooStick(34, 70, 0, 'blue') + renderBambooStick(66, 70, 0, 'blue') + renderBambooStick(34, 106, 0) + renderBambooStick(66, 106, 0); 
+
+case '七條': return renderBambooStick(50, 32, 0) + renderBambooStick(26, 74, 0) + renderBambooStick(50, 74, 0) + renderBambooStick(74, 74, 0) + renderBambooStick(26, 110, 0, 'blue') + renderBambooStick(50, 110, 0, 'blue') + renderBambooStick(74, 110, 0, 'blue'); 
+
+case '八條': return renderBambooStick(22, 44, -22) + renderBambooStick(40, 44, 22) + renderBambooStick(60, 44, -22) + renderBambooStick(78, 44, 22) + renderBambooStick(22, 96, 22) + renderBambooStick(40, 96, -22) + renderBambooStick(60, 96, 22) + renderBambooStick(78, 96, -22); 
+
+case '九條': return renderBambooStick(26, 35, 0) + renderBambooStick(50, 35, 0) + renderBambooStick(74, 35, 0) + renderBambooStick(26, 70, 0, 'red') + renderBambooStick(50, 70, 0, 'red') + renderBambooStick(74, 70, 0, 'red') + renderBambooStick(26, 105, 0, 'blue') + renderBambooStick(50, 105, 0, 'blue') + renderBambooStick(74, 105, 0, 'blue'); 
+
+} 
+
+} 
+
+ 
+
+switch(name) { 
+
+case '東': return renderWindOrDragon('東', false, colors.black); 
+
+case '南': return renderWindOrDragon('南', false, colors.black); 
+
+case '西': return renderWindOrDragon('西', false, colors.black); 
+
+case '北': return renderWindOrDragon('北', false, colors.black); 
+
+case '中': return renderWindOrDragon('中', true, colors.red); 
+
+case '發': return renderWindOrDragon('發', true, colors.green); 
+
+case '白': return renderWindOrDragon('白', true); 
+
+case '春': return renderFlower('春', '1', true); 
+
+case '夏': return renderFlower('夏', '2', true); 
+
+case '秋': return renderFlower('秋', '3', true); 
+
+case '冬': return renderFlower('冬', '4', true); 
+
+case '梅': return renderFlower('梅', '1', false); 
+
+case '蘭': return renderFlower('蘭', '2', false); 
+
+case '竹': return renderFlower('竹', '3', false); 
+
+case '菊': return renderFlower('菊', '4', false); 
+
+} 
+
+ 
+
+return ''; 
+
+} 
+
+ 
+
+function mkTile(name, sz='sm', extra='') { 
+
+const el = document.createElement('div'); 
+
+el.className = `mj-tile ${sz} ${extra}`; 
+
+el.dataset.tile = name; 
+
+el.title = name; 
+
+el.innerHTML = `<svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">${tileSVGContent(name)}</svg>`; 
+
+return el; 
+
+} 
+
+ 
+
+function mkBackTile(sz='sm') { 
+
+const el = document.createElement('div'); 
+
+el.className = `mj-tile back ${sz}`; 
+
+el.innerHTML = `<svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg"> 
+
+<rect x="8" y="8" width="84" height="124" rx="4" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.5" /> 
+
+<circle cx="50" cy="70" r="18" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.6" /> 
+
+<path d="M50,42 L50,98 M22,70 L78,70" stroke="#ffffff" stroke-width="1.5" opacity="0.4" /> 
+
+<polygon points="50,60 60,70 50,80 40,70" fill="#ffffff" opacity="0.5" /> 
+
+</svg>`; 
+
+return el; 
+
+} 
+
+ 
+
+function fillRow(id,names,sz='sm'){ 
+
+const el=document.getElementById(id);if(!el)return; 
+
+el.innerHTML='';names.forEach(n=>el.appendChild(mkTile(n,sz))); 
+
+} 
+
+ 
+
+// ═══════════════════════════════════════════ 
+
+// STATIC TILE RENDERING 
+
+// ═══════════════════════════════════════════ 
+
+function renderStatic(){ 
+
+fillRow('r-wan',['一萬','二萬','三萬','四萬','五萬','六萬','七萬','八萬','九萬']); 
+
+fillRow('r-tiao',['一條','二條','三條','四條','五條','六條','七條','八條','九條']); 
+
+fillRow('r-tong',['一筒','二筒','三筒','四筒','五筒','六筒','七筒','八筒','九筒']); 
+
+fillRow('r-feng',['東','南','西','北']); 
+
+fillRow('r-yuan',['中','發','白']); 
+
+fillRow('r-hua',['春','夏','秋','冬','梅','蘭','竹','菊']); 
+
+fillRow('r-chi',['三萬','四萬','五萬']); 
+
+fillRow('r-pon',['北','北','北']); 
+
+fillRow('r-gng',['發','發','發','發']); 
+
+fillRow('p-phu',['一萬','二萬','三萬','四筒','五筒','六筒','七條','八條','九條','二筒','三筒','四筒','五條','六條','七條','八條','八條']); 
+
+fillRow('p-qys',['一筒','二筒','三筒','四筒','五筒','六筒','七筒','八筒','九筒','一筒','二筒','三筒','四筒','五筒','六筒','七筒','七筒']); 
+
+fillRow('p-ddh',['東','東','東','西','西','西','中','中','中','發','發','發','白','白','白','一萬','一萬']); 
+
+fillRow('p-qds',['一萬','一萬','一萬','二萬','二萬','二萬','三筒','三筒','三筒','四筒','四筒','四筒','五條','五條','五條','東','東']); 
+
+fillRow('p-dsy',['中','中','中','發','發','發','白','白','白','一萬','二萬','三萬','四筒','五筒','六筒','七條','七條']); 
+
+fillRow('p-hys',['一萬','二萬','三萬','四萬','五萬','六萬','七萬','八萬','九萬','東','東','東','發','發','發','中','中']); 
+
+fillRow('p-sxs',['東','東','東','南','南','南','西','西','西','中','中','中','發','發','發','北','北']); 
+
+fillRow('p-sac',['二萬','二萬','二萬','五筒','五筒','五筒','八條','八條','八條','中','中','中','發','發','發','白','白']); 
+
+fillRow('p-zys',['東','東','東','南','南','南','西','西','西','北','北','北','中','中','中','發','發']); 
+
+fillRow('p-mqzm',['二萬','三萬','四萬','六筒','七筒','八筒','一條','二條','三條','七條','八條','九條','北','北']); 
+
+// Hero showcase 
+
+const hs=document.getElementById('hshow'); 
+
+if(hs){hs.innerHTML='';['一萬','五筒','九條','東','中','發','白'].forEach((t,i)=>{ 
+
+const el=mkTile(t,'xl'); 
+
+el.style.cssText=`animation:heroIn .6s cubic-bezier(.34,1.56,.64,1) ${i*.09}s both`; 
+
+hs.appendChild(el); 
+
+});} 
+
+} 
+
+ 
+
+// ═══════════════════════════════════════════ 
+
+// QUIZ ENGINE 
+
+// ═══════════════════════════════════════════ 
+
+const QD={ 
+
+q1:{title:'🀄 牌型測驗',questions:[ 
+
+{q:'台灣麻將共有幾張牌？',opts:['108張','136張','144張','160張'],ans:2,exp:'台灣麻將共144張：萬筒條各36張＋風牌16張＋三元牌12張＋花牌8張。'}, 
+
+{q:'下列哪組屬於「字牌」？',opts:['一萬～九萬','東南西北、中發白','春夏秋冬','九筒、九條'],ans:1,exp:'字牌包含風牌（東南西北）和三元牌（中發白），不能組成順子。'}, 
+
+{q:'花牌抓到後要怎麼處理？',opts:['當一般手牌打出','直接棄掉','立即亮示並補牌','可以選擇留著'],ans:2,exp:'花牌抓到後必須立即公開亮示，然後從牌尾補一張牌。'}, 
+
+{q:'哪一組是「三元牌」？',sets:[['一萬','二萬','三萬'],['東','南','西'],['中','發','白'],['春','夏','秋']],opts:['甲組（萬子）','乙組（風牌）','丙組（中發白）','丁組（花牌）'],ans:2,exp:'三元牌是中（紅中）、發（發財）、白（白板），共12張（各4張）。'}, 
+
+]}, 
+
+q2:{title:'📋 規則測驗',questions:[ 
+
+{q:'台灣麻將閒家起手幾張牌？',opts:['13張','14張','16張','17張'],ans:2,exp:'台灣麻將閒家起手16張，莊家17張（多補一張後起打）。'}, 
+
+{q:'打牌的輪流順序是？',opts:['順時針','逆時針','從最高分者開始','隨機'],ans:1,exp:'台灣麻將的出牌順序是「逆時針」，即由右手邊的玩家接著出牌。'}, 
+
+{q:'胡牌的基本結構是？',opts:['4副＋1對（14張）','5副＋1對（17張）','6副（18張）','3副＋2對（13張）'],ans:1,exp:'台灣麻將需湊成「5副順子或刻子＋1對將牌」，共17張（手牌16張＋胡的1張）。'}, 
+
+{q:'吃碰槓胡的優先順序（最高→最低）？',opts:['吃＞碰＞槓＞胡','胡＞槓＞碰＞吃','碰＞胡＞吃＞槓','槓＞碰＞吃＞胡'],ans:1,exp:'優先順序為：胡牌最優先，其次是槓牌，再來碰牌，最後才是吃牌。'}, 
+
+]}, 
+
+q3:{title:'🖐 吃碰槓測驗',questions:[ 
+
+{q:'「吃牌」只能吃誰打出的牌？',opts:['任何人','對家','上家（右邊）','下家（左邊）'],ans:2,exp:'吃牌只能吃上家（右手邊玩家）打出的牌，組成順子。'}, 
+
+{q:'要「碰牌」手中需要幾張相同的牌？',opts:['1張','2張','3張','4張'],ans:1,exp:'碰牌需手中有2張相同的牌，加上別人打出的1張，共3張組成刻子。'}, 
+
+{q:'「暗槓」和「明槓」的主要差異？',opts:['暗槓可破門清、明槓不行','暗槓不破門清、明槓破壞門清','兩者完全相同','暗槓不需補牌'],ans:1,exp:'暗槓是自己摸到4張後自行槓牌，不破壞門清；明槓用別人打出的牌來槓，會破壞門清。'}, 
+
+{q:'什麼是「過水」？後果為何？',opts:['摸到花牌不補','聽牌後放棄胡牌機會，之後無法再胡同張牌','已碰的牌再槓','打出自己需要的牌'],ans:1,exp:'過水是聽牌狀態下，別人打出胡牌所需之牌卻未選擇胡，之後若再打出同一張，無法再胡。'}, 
+
+]}, 
+
+q4:{title:'🏆 台數測驗',questions:[ 
+
+{q:'「門清自摸」總共幾台？',opts:['1台','2台','3台','4台'],ans:2,exp:'門清1台＋自摸1台，門清自摸合計3台！'}, 
+
+{q:'「清一色」幾台？',opts:['3台','5台','7台','8台'],ans:3,exp:'清一色是8台！手牌全部同一花色（萬或筒或條），無字牌。'}, 
+
+{q:'集齊全部8張花牌可以如何處理？',opts:['等胡牌時才算','立即胡牌（可當自摸）','只算4台','什麼都不做'],ans:1,exp:'集齊8張花牌可以當自摸直接胡牌，共8台，非常稀有！'}, 
+
+{q:'莊家連莊3次，台數會如何計算？',opts:['不影響','每局多3台','每局翻倍','台數固定'],ans:1,exp:'莊家每連莊一局，各項計算多加1台。連莊3次等於每局多3台！'}, 
+
+]}, 
+
+q5:{title:'🎯 牌型辨識測驗',questions:[ 
+
+{q:'以下牌面是什麼牌型？',tiles:['一條','一條','一條','二筒','二筒','二筒','三萬','三萬','三萬','北','北','北','中','中'],opts:['清一色','對對胡（碰碰胡）','七對子','混一色'],ans:1,exp:'4組刻子（一條×3、二筒×3、三萬×3、北×3）＋1對將（中×2）= 對對胡，3台！'}, 
+
+{q:'以下牌面是什麼牌型？',tiles:['一萬','一萬','三萬','三萬','五萬','五萬','七萬','七萬','九萬','九萬','東','東','西','西'],opts:['對對胡','清一色','七對子','平胡'],ans:2,exp:'7組對子（一萬、三萬、五萬、七萬、九萬、東、西）= 七對子，3台！'}, 
+
+{q:'以下牌面是什麼牌型？',tiles:['一筒','二筒','三筒','四筒','五筒','六筒','七筒','八筒','九筒','一筒','一筒','一筒','五筒','五筒'],opts:['平胡','混一色','對對胡','清一色'],ans:3,exp:'全部都是筒子，無字牌 = 清一色，8台！'}, 
+
+{q:'「大三元」需要哪些牌做刻子？',opts:['東南西北各做刻子','中發白各做刻子','中發白中兩組刻子加一對','集齊8張花牌'],ans:1,exp:'大三元 = 中、發、白三種三元牌全部做成刻子（或槓子），8台！'}, 
+
+]}, 
+
+q6:{title:'💡 實戰技巧測驗',questions:[ 
+
+{q:'起手後，最優先應該做什麼？',opts:['立刻吃碰','先定做牌方向再出牌','打最大的牌','盡快槓牌'],ans:1,exp:'配牌時先判斷走順子還是刻子路線，早定方向才不會越打越亂！'}, 
+
+{q:'以下哪個有關「過水」的描述是正確的？',opts:['過水後如果別人再打出同牌仍可胡','過水後將無法再胡那張牌','過水只影響一輪','過水後可以換聽別張'],ans:1,exp:'過水後，若其他玩家之後打出同一張牌，你就無法再胡了。所以要謹慎決定是否過水。'}, 
+
+{q:'「詐胡」的後果是什麼？',opts:['摸到花牌不補，輸一台','宣稱胡牌但牌型不合法，通常要賠三家','吃牌吃錯，重新摸牌','槓牌後沒補牌'],ans:1,exp:'詐胡是宣稱胡牌但實際上牌型不正確，通常需賠給其他三家，代價非常大！'}, 
+
+{q:'下列哪種情況代表你的手牌「門清」？',opts:['只摸牌和打牌，未吃碰明槓','有碰過牌但沒有吃牌','只有暗槓沒有碰','有8張花牌'],ans:0,exp:'門清指全程未吃牌、未碰牌、未明槓，只靠自己摸牌。暗槓不破門清。'}, 
+
+]} 
+
+}; 
+
+const QS={}; 
+
+function initQ(id){QS[id]={q:0,score:0,done:false};renderQ(id);} 
+
+function renderQ(id){ 
+
+const D=QD[id],S=QS[id],el=document.getElementById(id);if(!el||!D)return; 
+
+const qd=D.questions[S.q],tot=D.questions.length; 
+
+let tilesHTML='',setsHTML=''; 
+
+if(qd.tiles)tilesHTML=`<div class="quiz-tile-r" id="${id}-tr"></div>`; 
+
+if(qd.sets)setsHTML=`<div class="quiz-sets">${qd.sets.map((s,i)=>`<div class="quiz-set-grp"><div class="quiz-set-lbl">${['甲','乙','丙','丁'][i]}組</div><div class="quiz-set-row" id="${id}-sr${i}"></div></div>`).join('')}</div>`; 
+
+el.innerHTML=`<div class="quiz-title">${D.title}</div> 
+
+<div class="quiz-prog">第 ${S.q+1} / ${tot} 題${S.q>0?' · 目前得分 '+S.score+'/'+S.q:''}</div> 
+
+<div class="quiz-q">${qd.q}</div> 
+
+${tilesHTML}${setsHTML} 
+
+<div class="quiz-opts">${qd.opts.map((o,i)=>`<button class="quiz-opt" onclick="ansQ('${id}',${i})">${o}</button>`).join('')}</div> 
+
+<div class="quiz-fb" id="${id}-fb"></div> 
+
+<button class="quiz-nxt" id="${id}-nxt" onclick="nxtQ('${id}')">${S.q+1<tot?'下一題 →':'查看結果'}</button> 
+
+<div class="quiz-final" id="${id}-fin"></div>`; 
+
+setTimeout(()=>{ 
+
+if(qd.tiles){const r=document.getElementById(`${id}-tr`);if(r)qd.tiles.forEach(t=>r.appendChild(mkTile(t,'sm')));} 
+
+if(qd.sets){qd.sets.forEach((s,i)=>{const r=document.getElementById(`${id}-sr${i}`);if(r)s.forEach(t=>r.appendChild(mkTile(t,'sm')));});} 
+
+},50); 
+
+} 
+
+function ansQ(id,chosen){ 
+
+const S=QS[id];if(S.done)return;S.done=true;beep('click'); 
+
+const qd=QD[id].questions[S.q];const ok=chosen===qd.ans;if(ok)S.score++; 
+
+document.querySelectorAll(`#${id} .quiz-opt`).forEach((o,i)=>{o.disabled=true;if(i===qd.ans)o.classList.add('correct');else if(i===chosen&&!ok)o.classList.add('wrong');}); 
+
+const fb=document.getElementById(`${id}-fb`); 
+
+fb.className=`quiz-fb show ${ok?'ok':'bad'}`;fb.textContent=(ok?'✅ 正確！':'❌ 答錯了！')+' '+qd.exp; 
+
+document.getElementById(`${id}-nxt`).classList.add('show'); 
+
+beep(ok?'pon':'err'); 
+
+} 
+
+function nxtQ(id){ 
+
+const S=QS[id],tot=QD[id].questions.length;S.q++;S.done=false; 
+
+if(S.q>=tot){showFinal(id);return;}renderQ(id); 
+
+} 
+
+function showFinal(id){ 
+
+const S=QS[id],tot=QD[id].questions.length,pct=Math.round(S.score/tot*100),el=document.getElementById(id); 
+
+const p=pct===100?'🏆 滿分！麻將達人！':pct>=75?'🎉 優秀！繼續加油！':pct>=50?'👍 不錯，再練習一下！':'🀄 繼續學習，你會進步的！'; 
+
+el.innerHTML=`<div class="quiz-title">${QD[id].title} — 測驗結果</div> 
+
+<div class="quiz-final show"><div class="quiz-big">${S.score}/${tot}</div> 
+
+<p style="font-size:13px;color:rgba(255,255,255,.5);margin-top:4px">${pct}% 正確率</p> 
+
+<p style="color:var(--gold-l);margin-top:8px;font-weight:700">${p}</p></div> 
+
+<button class="quiz-retry" onclick="initQ('${id}')">🔄 重新測驗</button>`; 
+
+beep('hu'); 
+
+} 
+
+ 
+
+// ═══════════════════════════════════════════ 
+
+// GAME ENGINE 
+
+// ═══════════════════════════════════════════ 
+
+const SUITS=['萬','筒','條'],NUMS2=['一','二','三','四','五','六','七','八','九'], 
+
+NIDX={'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9}, 
+
+ZIPAIO=['東','南','西','北','中','發','白'], 
+
+FLOWERS2=['春','夏','秋','冬','梅','蘭','竹','菊']; 
+
+let G={deck:[],hand:[],flowers:[],opps:[{h:[],d:[]},{h:[],d:[]},{h:[],d:[]}],disc:[],turn:'p',sel:null,lastD:null,cChi:false,cPon:false,cGng:false,cHu:false,drawn:false,ait:null}; 
+
+function buildDeck(){const d=[];SUITS.forEach(s=>NUMS2.forEach(n=>{for(let i=0;i<4;i++)d.push(n+s);}));ZIPAIO.forEach(z=>{for(let i=0;i<4;i++)d.push(z);});FLOWERS2.forEach(f=>d.push(f));return shuf(d);} 
+
+function shuf(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=0|Math.random()*(i+1);[r[i],r[j]]=[r[j],r[i]];}return r;} 
+
+function isFl(t){return FLOWERS2.includes(t);} 
+
+function newGame(){ 
+
+if(G.ait){clearTimeout(G.ait);G.ait=null;}closeHu(); 
+
+G={deck:buildDeck(),hand:[],flowers:[],opps:[{h:[],d:[]},{h:[],d:[]},{h:[],d:[]}],disc:[],turn:'p',sel:null,lastD:null,cChi:false,cPon:false,cGng:false,cHu:false,drawn:false,ait:null}; 
+
+for(let i=0;i<16;i++){let t=G.deck.pop();while(isFl(t)){G.flowers.push(t);t=G.deck.pop();}G.hand.push(t);} 
+
+G.opps.forEach(o=>{for(let i=0;i<16;i++)o.h.push(G.deck.pop());}); 
+
+sortH(G.hand); 
+
+addLog('🀄 新局開始！持有'+G.hand.length+'張'+(G.flowers.length?'，花牌：'+G.flowers.join(' '):''),'hl'); 
+
+addLog('👆 點選手牌選取→按「出牌」，或雙點直接出牌'); 
+
+renderAll();pDraw(); 
+
+} 
+
+function pDraw(){ 
+
+if(!G.deck.length){addLog('⚠️ 牌堆空，流局！','err');return;} 
+
+let t=G.deck.pop();while(isFl(t)){addLog('🌸 補花：'+t);G.flowers.push(t);if(!G.deck.length)return;t=G.deck.pop();} 
+
+G.hand.push(t);sortH(G.hand);G.drawn=true;addLog('🎴 你摸到：'+t);beep('draw'); 
+
+G.cHu=checkHu(G.hand);G.cGng=selfGang(G.hand);G.cChi=G.cPon=false;renderAll(); 
+
+} 
+
+function sortH(h){ 
+
+const ord=t=>{if(isFl(t))return 1000+FLOWERS2.indexOf(t);for(let i=0;i<SUITS.length;i++)if(t.includes(SUITS[i]))return i*10+(NIDX[t[0]]||0);const z=ZIPAIO.indexOf(t);return 100+(z>=0?z:99);}; 
+
+h.sort((a,b)=>ord(a)-ord(b)); 
+
+} 
+
+function discSel(){ 
+
+if(!G.sel){toast('請先選取要出的牌');return;}if(G.turn!=='p'){toast('還沒輪到你！');return;}if(!G.drawn){toast('請先摸牌');return;} 
+
+const i=G.hand.indexOf(G.sel);if(i===-1){toast('找不到這張牌');return;} 
+
+const t=G.hand.splice(i,1)[0];G.disc.push(t);G.lastD=t;G.sel=null;G.drawn=false; 
+
+G.cHu=G.cGng=G.cChi=G.cPon=false;addLog('你打出：'+t);beep('discard');renderAll(); 
+
+G.turn=0;schedAI(700); 
+
+} 
+
+function doAct(act){ 
+
+const last=G.lastD; 
+
+if(act==='chi'&&G.cChi){G.disc.pop();G.hand.push(last);sortH(G.hand);addLog('你吃牌：'+last,'hl');beep('pon');G.cChi=G.cPon=false;G.turn='p';G.drawn=true;toast('吃牌！記得出牌');renderAll();} 
+
+else if(act==='pon'&&G.cPon){G.disc.pop();G.hand.push(last);sortH(G.hand);addLog('你碰牌：'+last+'（刻子）','hl');beep('pon');G.cChi=G.cPon=false;G.turn='p';G.drawn=true;toast('碰牌！記得出牌');renderAll();} 
+
+else if(act==='gng'&&G.cGng){addLog('你槓牌！補牌中...','hl');beep('pon');G.cGng=false;G.drawn=false;pDraw();} 
+
+} 
+
+function doHu(){if(!G.cHu){beep('err');toast('現在不能胡牌！');return;}const an=anaHu(G.hand);beep('hu');addLog('🎉 胡牌！'+an.tai+'台','ok');showHu(an);} 
+
+function selfGang(h){const c={};h.forEach(t=>c[t]=(c[t]||0)+1);return Object.values(c).some(v=>v===4);} 
+
+function checkHu(h){if(h.length<14||h.length>17)return false;if(h.length===14&&chkSev(h))return true;return frmHand(h);} 
+
+function frmHand(tiles){const h=[...tiles].sort(),seen=new Set();for(const t of h){if(seen.has(t))continue;seen.add(t);if(h.filter(x=>x===t).length>=2){const r=[...h];r.splice(r.indexOf(t),1);r.splice(r.indexOf(t),1);if(canMelds(r))return true;}}return false;} 
+
+function canMelds(tiles){if(!tiles.length)return true;const h=[...tiles].sort();const t=h[0];if(h.filter(x=>x===t).length>=3){const r=[...h];for(let i=0;i<3;i++)r.splice(r.indexOf(t),1);if(canMelds(r))return true;}if(!ZIPAIO.includes(t)&&!isFl(t)){const s=t.slice(-1),n=NIDX[t[0]];if(n&&n<=7){const t2=NUMS2[n]+s,t3=NUMS2[n+1]+s;if(h.includes(t2)&&h.includes(t3)){const r=[...h];r.splice(r.indexOf(t),1);r.splice(r.indexOf(t2),1);r.splice(r.indexOf(t3),1);if(canMelds(r))return true;}}}return false;} 
+
+function chkSev(t){if(t.length!==14)return false;const c={};t.forEach(x=>c[x]=(c[x]||0)+1);const v=Object.values(c);return v.length===7&&v.every(x=>x===2);} 
+
+function anaHu(hand){let tai=1;const rs=['平胡 1台'];const h=[...hand]; 
+
+if(chkSev(h)){tai+=2;rs.push('七對子 +2台');} 
+
+const sus=h.filter(t=>!ZIPAIO.includes(t)&&!isFl(t)).map(t=>t.slice(-1)); 
+
+if([...new Set(sus)].length===1&&sus.length===h.length){tai+=7;rs.push('清一色 +7台');} 
+
+const co={};h.forEach(t=>co[t]=(co[t]||0)+1); 
+
+if(co['中']>=3){tai++;rs.push('中刻子 +1台');}if(co['發']>=3){tai++;rs.push('發刻子 +1台');}if(co['白']>=3){tai++;rs.push('白刻子 +1台');} 
+
+if(G.flowers.length){tai+=G.flowers.length;rs.push('花牌 +'+G.flowers.length+'台');} 
+
+return{tai,rs};} 
+
+function showHu(an){document.getElementById('hu-msg').textContent='總計 '+an.tai+' 台！';document.getElementById('hu-det').innerHTML=an.rs.map(r=>`<div class="hu-row"><span>${r}</span></div>`).join('');document.getElementById('hu-modal').classList.add('show');} 
+
+function closeHu(){document.getElementById('hu-modal').classList.remove('show');} 
+
+function schedAI(d){if(G.ait)clearTimeout(G.ait);G.ait=setTimeout(runAI,d);} 
+
+function runAI(){const t=G.turn;if(t==='p')return;const o=G.opps[t]; 
+
+if(G.lastD&&o.h.filter(x=>x===G.lastD).length>=2&&Math.random()>.65){ 
+
+const tile=G.lastD;o.h.push(tile,tile);G.disc.pop();G.lastD=null; 
+
+addLog(['玩家西','玩家北','玩家東'][t]+' 碰牌：'+tile);beep('pon');aiDis(t);return; 
+
+} 
+
+G.lastD=null;if(G.deck.length){const d=G.deck.pop();if(!isFl(d))o.h.push(d);}aiDis(t); 
+
+} 
+
+function aiDis(t){const o=G.opps[t];if(!o.h.length){nxtT(t);return;} 
+
+const i=0|Math.random()*o.h.length;const tile=o.h.splice(i,1)[0]; 
+
+if(!isFl(tile)){o.d.push(tile);G.disc.push(tile);G.lastD=tile;addLog(['玩家西','玩家北','玩家東'][t]+' 出牌：'+tile);beep('discard');} 
+
+renderAll();nxtT(t); 
+
+} 
+
+function nxtT(cur){const n=cur+1;if(n>=3){G.turn='p';G.lastD=null;renderAll();setTimeout(()=>{if(G.turn==='p'&&!G.drawn)pDraw();},400);}else{G.turn=n;schedAI(700+Math.random()*350);}} 
+
+function renderAll(){rHand();rOpps();rDisc();rInfo();updBtns();} 
+
+function rHand(){const el=document.getElementById('phand');el.innerHTML=''; 
+
+G.hand.forEach(t=>{ 
+
+const td=mkTile(t,'pt'+(t===G.sel?' sel':'')); 
+
+td.onclick=()=>{if(G.turn!=='p')return;if(G.sel===t&&G.drawn)discSel();else{G.sel=t;rHand();updBtns();}}; 
+
+td.ondblclick=()=>{if(G.turn!=='p')return;G.sel=t;if(G.drawn)discSel();}; 
+
+el.appendChild(td); 
+
+}); 
+
+} 
+
+function rOpps(){[['ow',0],['on',1],['oe',2]].forEach(([id,i])=>{ 
+
+const el=document.getElementById(id);if(!el)return;el.innerHTML=''; 
+
+const n=Math.min(G.opps[i].h.length,14); 
+
+for(let j=0;j<n;j++)el.appendChild(mkBackTile('sm')); 
+
+});} 
+
+function rDisc(){const el=document.getElementById('darea');el.innerHTML='';G.disc.slice(-20).forEach(t=>el.appendChild(mkTile(t,'sm')));} 
+
+function rInfo(){document.getElementById('dct').textContent=G.deck.length;const nm={p:'你',0:'西家',1:'北家',2:'東家'};document.getElementById('ctrn').textContent=nm[G.turn]||'--';} 
+
+function updBtns(){const my=G.turn==='p',dr=G.drawn; 
+
+document.getElementById('bdis').disabled=!(my&&dr&&G.sel); 
+
+document.getElementById('bchi').disabled=!G.cChi;document.getElementById('bpon').disabled=!G.cPon; 
+
+document.getElementById('bgng').disabled=!G.cGng;document.getElementById('bhu').disabled=!G.cHu; 
+
+document.getElementById('huhint').style.display=G.cHu?'block':'none'; 
+
+} 
+
+function addLog(msg,cls=''){const el=document.getElementById('glog');const e=document.createElement('div');e.className='log-e '+cls;e.textContent=msg;const h=el.querySelector('.log-hdr');el.insertBefore(e,h?h.nextSibling:el.firstChild);const es=el.querySelectorAll('.log-e');if(es.length>18)es[es.length-1].remove();} 
+
+ 
+
+// ═══════════════════════════════════════════ 
+
+// TOAST & NAV 
+
+// ═══════════════════════════════════════════ 
+
+let _tt=null; 
+
+function toast(msg,d=2200){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');if(_tt)clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),d);} 
+
+function goTo(id){const el=document.querySelector(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});} 
+
+window.addEventListener('scroll',()=>document.getElementById('topnav').classList.toggle('visible',scrollY>innerHeight*.75)); 
+
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.08,rootMargin:'0px 0px -30px 0px'}); 
+
+ 
+
+document.addEventListener('DOMContentLoaded',()=>{ 
+
+// Add hero animation keyframe 
+
+const s=document.createElement('style'); 
+
+s.textContent='@keyframes heroIn{from{opacity:0;transform:translateY(28px) rotate(-8deg)}to{opacity:1;transform:translateY(0) rotate(0)}}'; 
+
+document.head.appendChild(s); 
+
+renderStatic(); 
+
+Object.keys(QD).forEach(id=>initQ(id)); 
+
+newGame(); 
+
+setTimeout(()=>document.querySelectorAll('.fi').forEach(el=>obs.observe(el)),200); 
+
+}); 
+
+</script> 
+
+<!-- Code injected by live-server --> 
+
+<script> 
+
+// <![CDATA[ <-- For SVG support 
+
+if ('WebSocket' in window) { 
+
+(function () { 
+
+function refreshCSS() { 
+
+var sheets = [].slice.call(document.getElementsByTagName("link")); 
+
+var head = document.getElementsByTagName("head")[0]; 
+
+for (var i = 0; i < sheets.length; ++i) { 
+
+var elem = sheets[i]; 
+
+var parent = elem.parentElement || head; 
+
+parent.removeChild(elem); 
+
+var rel = elem.rel; 
+
+if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") { 
+
+var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, ''); 
+
+elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf()); 
+
+} 
+
+parent.appendChild(elem); 
+
+} 
+
+} 
+
+var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://'; 
+
+var address = protocol + window.location.host + window.location.pathname + '/ws'; 
+
+var socket = new WebSocket(address); 
+
+socket.onmessage = function (msg) { 
+
+if (msg.data == 'reload') window.location.reload(); 
+
+else if (msg.data == 'refreshcss') refreshCSS(); 
+
+}; 
+
+if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) { 
+
+console.log('Live reload enabled.'); 
+
+sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true); 
+
+} 
+
+})(); 
+
+} 
+
+else { 
+
+console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.'); 
+
+} 
+
+// ]]> 
+
+</script> 
+
+</body> 
+
+</html> 
