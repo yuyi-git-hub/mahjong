@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台灣正宗 3D 麻將牌面美學展示館</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: radial-gradient(circle at center, #115e3b 0%, #062717 100%);
+            font-family: 'Noto Sans TC', sans-serif;
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+
+        /* 3D 牌身視覺效果 */
+        .mj-tile-container {
+            perspective: 800px;
+        }
+
+        .mj-tile-3d {
+            width: 72px;
+            height: 100px;
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+            border-radius: 8px;
+        }
+
+        /* 麻將牌的前後與側面厚度 */
+        .mj-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px;
+        }
+
+        .mj-front {
+            background: linear-gradient(145deg, #ffffff 0%, #f3f4f6 100%);
+            z-index: 2;
+            transform: translateZ(6px); /* 牌面厚度 */
+            border: 1px solid #e5e7eb;
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 動態牌背主題色 */
+        .mj-back {
+            transform: rotateY(180deg) translateZ(6px);
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3);
+        }
+
+        /* 牌背主題：經典綠 */
+        .theme-green .mj-back { background: linear-gradient(135deg, #15803d 0%, #166534 100%); }
+        .theme-green .mj-side-color { background-color: #166534; }
+        /* 牌背主題：曜石黑 */
+        .theme-black .mj-back { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .theme-black .mj-side-color { background-color: #0f172a; }
+        /* 牌背主題：琥珀黃 */
+        .theme-yellow .mj-back { background: linear-gradient(135deg, #b45309 0%, #78350f 100%); }
+        .theme-yellow .mj-side-color { background-color: #78350f; }
+        /* 牌背主題：烈焰紅 */
+        .theme-red .mj-back { background: linear-gradient(135deg, #be123c 0%, #9f1239 100%); }
+        .theme-red .mj-side-color { background-color: #9f1239; }
+
+        /* 側邊厚度 3D 效果 */
+        .mj-side {
+            position: absolute;
+            background: #e5e7eb;
+            backface-visibility: hidden;
+        }
+        .mj-side-top    { width: 72px; height: 12px; transform: rotateX(90deg) translateZ(6px); }
+        .mj-side-bottom { width: 72px; height: 12px; transform: rotateX(-90deg) translateZ(94px); }
+        .mj-side-left   { width: 12px; height: 100px; transform: rotateY(-90deg) translateZ(6px); }
+        .mj-side-right  { width: 12px; height: 100px; transform: rotateY(90deg) translateZ(66px); }
+
+        .mj-side-color-top    { width: 72px; height: 12px; transform: rotateX(90deg) translateZ(-6px); }
+        .mj-side-color-bottom { width: 72px; height: 12px; transform: rotateX(-90deg) translateZ(82px); }
+        .mj-side-color-left   { width: 12px; height: 100px; transform: rotateY(-90deg) translateZ(-60px); }
+        .mj-side-color-right  { width: 12px; height: 100px; transform: rotateY(90deg) translateZ(-14px); }
+
+        /* 懸停與選中動態效果 */
+        .mj-tile-3d:hover {
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .selected-tile {
+            outline: 3px solid #f59e0b;
+            outline-offset: 4px;
+            transform: translateY(-8px) scale(1.05);
+        }
+
+        /* 自定義滾動條 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.4);
+        }
+    </style>
+</head>
+<body class="theme-green p-4 md:p-8">
+
+    <!-- 頂部導航與主題控制 -->
+    <header class="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-center gap-4 bg-black/30 p-4 rounded-2xl border border-white/10 backdrop-blur-md">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200">
+                🀄 台灣正宗 3D 麻將牌面美學展示館
+            </h1>
+            <p class="text-xs md:text-sm text-slate-400 mt-1">
+                依真實圖片深度修正八條（雙層 W/M 雕紋）• 完美保留花牌黑數紅字/紅數黑字美學
+            </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+            <!-- 牌背切換 -->
+            <div class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+                <span class="text-xs text-slate-400">牌身與牌桌配色：</span>
+                <button onclick="changeTheme('green', '#115e3b', '#062717')" class="w-6 h-6 rounded-full bg-emerald-600 border border-white/40 cursor-pointer" title="經典綠"></button>
+                <button onclick="changeTheme('black', '#1e293b', '#020617')" class="w-6 h-6 rounded-full bg-slate-900 border border-white/40 cursor-pointer" title="曜石黑"></button>
+                <button onclick="changeTheme('yellow', '#78350f', '#451a03')" class="w-6 h-6 rounded-full bg-amber-700 border border-white/40 cursor-pointer" title="琥珀黃"></button>
+                <button onclick="changeTheme('red', '#9f1239', '#4c0519')" class="w-6 h-6 rounded-full bg-rose-800 border border-white/40 cursor-pointer" title="烈焰紅"></button>
+            </div>
+            <!-- 花牌樣式切換 -->
+            <div class="flex bg-white/5 rounded-lg p-1 border border-white/10 text-xs">
+                <button id="btn-flower-elegant" onclick="setFlowerStyle('elegant')" class="px-2.5 py-1 rounded bg-amber-500 text-slate-900 font-bold transition">藝術彩繪</button>
+                <button id="btn-flower-classic" onclick="setFlowerStyle('classic')" class="px-2.5 py-1 rounded text-slate-300 transition">經典線條</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主區塊：左側細部檢視 + 右側所有牌面展示 -->
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8">
+        
+        <!-- 左側：巨型 3D 檢視器 & 資訊說明 -->
+        <section class="lg:col-span-4 bg-black/40 p-6 rounded-3xl border border-white/10 backdrop-blur-md sticky top-6">
+            <h2 class="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
+                🔎 3D 立體檢視儀
+            </h2>
+            
+            <!-- 3D 互動容器 -->
+            <div class="flex justify-center items-center py-12 bg-white/5 rounded-2xl border border-white/5 relative overflow-hidden mb-6 group cursor-grab">
+                <div class="absolute inset-0 bg-radial-gradient from-white/10 to-transparent pointer-events-none"></div>
+                <!-- 巨型 3D 牌 -->
+                <div class="mj-tile-container">
+                    <div id="inspector-tile" class="mj-tile-3d w-32 h-44" style="transform: rotateX(20deg) rotateY(-20deg);">
+                        <!-- 側面 -->
+                        <div class="mj-side mj-side-top !w-32 !h-16" style="transform: rotateX(90deg) translateZ(8px);"></div>
+                        <div class="mj-side mj-side-bottom !w-32 !h-16" style="transform: rotateX(-90deg) translateZ(168px);"></div>
+                        <div class="mj-side mj-side-left !w-16 !h-44" style="transform: rotateY(-90deg) translateZ(8px);"></div>
+                        <div class="mj-side mj-side-right !w-16 !h-44" style="transform: rotateY(90deg) translateZ(112px);"></div>
+                        
+                        <div class="mj-side mj-side-color mj-side-color-top !w-32 !h-16" style="transform: rotateX(90deg) translateZ(-8px);"></div>
+                        <div class="mj-side mj-side-color mj-side-color-bottom !w-32 !h-16" style="transform: rotateX(-90deg) translateZ(152px);"></div>
+                        <div class="mj-side mj-side-color mj-side-color-left !w-16 !h-44" style="transform: rotateY(-90deg) translateZ(-116px);"></div>
+                        <div class="mj-side mj-side-color mj-side-color-right !w-16 !h-44" style="transform: rotateY(90deg) translateZ(-20px);"></div>
+                        
+                        <!-- 正面 -->
+                        <div class="mj-face mj-front flex items-center justify-center p-2" style="transform: translateZ(8px);">
+                            <div id="inspector-svg" class="w-full h-full"></div>
+                        </div>
+                        <!-- 背面 -->
+                        <div class="mj-face mj-back" style="transform: rotateY(180deg) translateZ(8px);"></div>
+                    </div>
+                </div>
+                <div class="absolute bottom-2 text-[10px] text-slate-500 pointer-events-none">
+                    將滑鼠移入上圖，可多視角偏轉檢視雕紋
+                </div>
+            </div>
+
+            <!-- 牌面基本資料 -->
+            <div class="space-y-4">
+                <div>
+                    <h3 id="tile-detail-title" class="text-2xl font-black text-white">八條 (8 Bamboo)</h3>
+                    <div id="tile-detail-badge" class="inline-block mt-1 px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        條子牌 (Bamboos)
+                    </div>
+                </div>
+                <p id="tile-detail-desc" class="text-sm text-slate-300 leading-relaxed">
+                    本系統特製重製款八條。採用上方「W型」、下方「M型」的經典正宗台灣麻將雙層排列。每個竹節均由高精度綠色圓形節點（Beads）重疊構成，中心疊加高對比白色圓骨內雕刻線（Inline），邊緣帶有手工防割圓角（Bevel），視覺飽滿度完美契合高檔雕刻手感。
+                </p>
+                <!-- 拷貝 SVG -->
+                <button onclick="copyTileSVG()" class="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-sm font-bold rounded-xl border border-white/10 transition flex items-center justify-center gap-2 cursor-pointer">
+                    📋 複製此牌面高畫質 SVG 原始碼
+                </button>
+            </div>
+        </section>
+
+        <!-- 右側：各大牌系展示面板 -->
+        <section class="lg:col-span-8 space-y-8">
+
+            <!-- 1. 條子牌 (Bamboos) -->
+            <div class="bg-black/20 p-6 rounded-3xl border border-white/5">
+                <h3 class="text-lg font-bold text-emerald-400 mb-4 flex items-center gap-2">
+                    🎋 條子系列 (Bamboos) <span class="text-xs font-normal text-slate-400">（點擊任一牌面送入下方手牌組建器，八條位於第八個）</span>
+                </h3>
+                <div id="grid-bamboos" class="flex flex-wrap gap-4 justify-start"></div>
+            </div>
+
+            <!-- 2. 花牌與季節牌 (Flowers & Seasons) -->
+            <div class="bg-black/20 p-6 rounded-3xl border border-white/5">
+                <h3 class="text-lg font-bold text-rose-400 mb-4 flex items-center gap-2">
+                    🌸 經典花牌與季節牌 (Flowers & Seasons) <span class="text-xs font-normal text-slate-400">（100% 沿用您的黑數紅字/紅數黑字美學設定）</span>
+                </h3>
+                <div id="grid-flowers" class="flex flex-wrap gap-4 justify-start"></div>
+            </div>
+
+            <!-- 3. 筒子牌 (Dots) -->
+            <div class="bg-black/20 p-6 rounded-3xl border border-white/5">
+                <h3 class="text-lg font-bold text-sky-400 mb-4 flex items-center gap-2">
+                    🔵 筒子系列 (Dots) <span class="text-xs font-normal text-slate-400">（同心雕刻、五彩金絲輪結構）</span>
+                </h3>
+                <div id="grid-dots" class="flex flex-wrap gap-4 justify-start"></div>
+            </div>
+
+            <!-- 4. 萬子牌 (Characters) -->
+            <div class="bg-black/20 p-6 rounded-3xl border border-white/5">
+                <h3 class="text-lg font-bold text-amber-400 mb-4 flex items-center gap-2">
+                    🀎 萬子系列 (Characters) <span class="text-xs font-normal text-slate-400">（繁體皇家御用行楷「萬」雕花）</span>
+                </h3>
+                <div id="grid-characters" class="flex flex-wrap gap-4 justify-start"></div>
+            </div>
+
+            <!-- 5. 字牌 (Honors) -->
+            <div class="bg-black/20 p-6 rounded-3xl border border-white/5">
+                <h3 class="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
+                    🌟 風向與三元大字 (Winds & Dragons) <span class="text-xs font-normal text-slate-400">（東南西北、中發白經典雕刻）</span>
+                </h3>
+                <div id="grid-honors" class="flex flex-wrap gap-4 justify-start"></div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- 台灣十六張手牌組建器 -->
+    <footer class="max-w-7xl mx-auto bg-slate-900/90 p-6 rounded-3xl border-2 border-amber-500/30 shadow-2xl backdrop-blur-md mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 pb-4 border-b border-white/10">
+            <div>
+                <h3 class="text-lg font-extrabold text-amber-300 flex items-center gap-2">
+                    🀐 台灣 16 張手牌模擬組建器
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">點擊上方展示牌可加入，點擊下方手牌可踢除，支援一鍵排序與大牌台數預判</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="sortUserHand()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-black rounded-xl text-xs transition shadow-lg cursor-pointer">
+                    ⚡ 一鍵理牌
+                </button>
+                <button onclick="clearUserHand()" class="px-4 py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-300 font-bold rounded-xl text-xs border border-rose-500/20 transition cursor-pointer">
+                    🗑️ 清空手牌
+                </button>
+            </div>
+        </div>
+
+        <!-- 玩家手牌軌 -->
+        <div id="user-hand-tray" class="flex flex-wrap gap-3 p-4 bg-black/40 rounded-2xl min-h-[120px] justify-center items-center border border-white/5">
+            <!-- 動態插入手牌 -->
+            <div id="hand-placeholder" class="text-sm text-slate-500">（空空如也，點擊上方牌面加入手牌）</div>
+        </div>
+
+        <!-- 牌型即時判定區 -->
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+            <span class="text-xs text-slate-400">當前牌數：<strong id="hand-count" class="text-amber-400 text-sm">0</strong> / 16 張</span>
+            <div id="analysis-box" class="text-xs bg-amber-500/10 text-amber-200 px-3 py-1.5 rounded-lg border border-amber-500/20 hidden">
+                <!-- 自動判斷 -->
+            </div>
+        </div>
+    </footer>
+
+    <!-- 通知小氣泡 -->
+    <div id="toast" class="fixed bottom-6 right-6 px-4 py-2 bg-slate-900 text-amber-300 border border-amber-500/50 text-xs rounded-xl shadow-2xl opacity-0 transition-opacity duration-300 pointer-events-none z-50"></div>
+
+    <script>
+        // 核心調色盤
+        const colors = {
+            green: '#15803d',     // 條子/發 的主色
+            greenShadow: '#0f5127', // 條子陰影
+            red: '#c8102e',       // 中/萬 的主色
+            redShadow: '#8a0a1f',   // 紅色陰影
+            blue: '#0f52ba',      // 筒子/白 的藍色
+            blueShadow: '#0a357a',  // 藍色陰影
+            black: '#1f2937',     // 風字/萬字數字的黑色
+            blackShadow: '#111827'  // 黑色陰影
+        };
+
+        // 當前設定狀態
+        let flowerStyle = 'elegant'; // elegant (藝術彩繪) | classic (經典線條)
+        let activeTileData = null; // 當前檢視的牌
+        let userHand = []; // 玩家組建的手牌
+
+        // 麻將語音或擬真敲擊音效 (Web Audio API)
+        function playTileSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (ctx.state === 'suspended') ctx.resume();
+                
+                // 模擬高分子材料碰撞 (一聲清脆的「鏘」聲)
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(1200, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.08);
+                
+                gain.gain.setValueAtTime(0.4, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+                
+                // 高頻接觸噪音
+                const bufferSize = ctx.sampleRate * 0.01;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+                
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.setValueAtTime(3000, ctx.currentTime);
+                
+                const noiseGain = ctx.createGain();
+                noiseGain.gain.setValueAtTime(0.2, ctx.currentTime);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.02);
+                
+                osc.connect(gain);
+                noise.connect(filter);
+                filter.connect(noiseGain);
+                
+                gain.connect(ctx.destination);
+                noiseGain.connect(ctx.destination);
+                
+                osc.start();
+                noise.start();
+                osc.stop(ctx.currentTime + 0.1);
+                noise.stop(ctx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        // 提示氣泡
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 2000);
+        }
+
+        // 1. 雕紋渲染器 - 條子 (Bamboo)
+        // 核心：精準渲染高強度貝茲曲線竹節 (Beads) 以及高對比白色內骨架線 (Inline)
+        function renderBambooStick(x, y, angle = 0, colorType = 'green') {
+            const primary = colorType === 'green' ? colors.green : (colorType === 'blue' ? colors.blue : colors.red);
+            const shadow = colorType === 'green' ? colors.greenShadow : (colorType === 'blue' ? colors.blueShadow : colors.redShadow);
+            return `
+            <g transform="translate(${x}, ${y}) rotate(${angle})">
+                <!-- 後方凹槽暗面 (營造雕刻邊緣陰影與立體感) -->
+                <path d="M -5 -16 L 5 -16 Q 7 -16 7 -12 Q 5 -5 5 0 Q 5 5 7 12 Q 7 16 5 16 L -5 16 Q -7 16 -7 12 Q -5 5 -5 0 Q -5 -5 -7 -12 Q -7 -16 -5 -16 Z" fill="${shadow}" />
+                <!-- 前方亮色烤漆面 -->
+                <path d="M -3.5 -14.5 L 3.5 -14.5 Q 5 -14.5 5 -11 Q 3.5 -4 3.5 0 Q 3.5 4 5 11 Q 5 14.5 3.5 14.5 L -3.5 14.5 Q -5 14.5 -5 11 Q -3.5 4 -3.5 0 Q -3.5 -4 -5 -11 Q -5 -14.5 -3.5 -14.5 Z" fill="${primary}" />
+                <!-- 高對比白色圓滑內線 (白色骨節刻痕) -->
+                <line x1="0" y1="-11" x2="0" y2="11" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="4,3" />
+                <!-- 竹節核心中點 -->
+                <circle cx="0" cy="0" r="2.2" fill="#ffffff" />
+            </g>`;
+        }
+
+        // 一條的彩色孔雀/神鳥雕刻
+        function renderPeacock() {
+            return `
+            <g transform="translate(50, 72) scale(1.05)">
+                <!-- 尾部羽毛翼 -->
+                <path d="M-30,-5 C-42,-30 -10,-45 0,-40 C10,-45 42,-30 30,-5 Z" fill="#0f766e" />
+                <!-- 羽毛眼 -->
+                <circle cx="-24" cy="-24" r="4.5" fill="#eab308" />
+                <circle cx="-24" cy="-24" r="2" fill="#b91c1c" />
+                <circle cx="24" cy="-24" r="4.5" fill="#eab308" />
+                <circle cx="24" cy="-24" r="2" fill="#b91c1c" />
+                <circle cx="0" cy="-34" r="5" fill="#eab308" />
+                <circle cx="0" cy="-34" r="2.5" fill="#1d4ed8" />
+                <!-- 翅膀 -->
+                <path d="M-20,5 C-26,20 -10,32 5,28 C15,25 18,12 12,0 Z" fill="#b91c1c" />
+                <path d="M20,5 C26,20 10,32 -5,28 C-15,25 -18,12 -12,0 Z" fill="#15803d" />
+                <!-- 鳥體 -->
+                <path d="M-12,-15 C-12,5 -5,24 0,24 C5,24 12,5 12,-15 Z" fill="#1d4ed8" />
+                <path d="M-8,-10 C-8,5 -3,18 0,18 C3,18 8,5 8,-10 Z" fill="#ffffff" opacity="0.3" />
+                <!-- 頸與頭 -->
+                <path d="M-4,-15 C-4,-28 -2,-32 0,-36 C2,-32 4,-28 4,-15 Z" fill="#1d4ed8" />
+                <circle cx="0" cy="-34" r="5.5" fill="#1d4ed8" />
+                <!-- 眼 -->
+                <circle cx="-2" cy="-35" r="1.5" fill="#ffffff" />
+                <circle cx="-2" cy="-35" r="0.7" fill="#000000" />
+                <circle cx="2" cy="-35" r="1.5" fill="#ffffff" />
+                <circle cx="2" cy="-35" r="0.7" fill="#000000" />
+                <!-- 喙 -->
+                <polygon points="0,-32 -3,-28 3,-28" fill="#eab308" />
+                <!-- 腳 -->
+                <line x1="-5" y1="24" x2="-8" y2="34" stroke="#eab308" stroke-width="3" stroke-linecap="round" />
+                <line x1="5" y1="24" x2="8" y2="34" stroke="#eab308" stroke-width="3" stroke-linecap="round" />
+            </g>`;
+        }
+
+        // 2. 筒子雕刻 (Dots) - 同心雕刻五彩結構
+        function renderDot(cx, cy, r, primaryColor = 'blue', accentColor = 'red') {
+            const p = colors[primaryColor];
+            const a = colors[accentColor];
+            
+            // 生成輻射齒輪雕刻線
+            let spokes = '';
+            const spokeCount = 8;
+            for (let i = 0; i < spokeCount; i++) {
+                let angle = (i * 360 / spokeCount) * Math.PI / 180;
+                let x1 = cx + (r * 0.3) * Math.cos(angle);
+                let y1 = cy + (r * 0.3) * Math.sin(angle);
+                let x2 = cx + (r * 0.72) * Math.cos(angle);
+                let y2 = cy + (r * 0.72) * Math.sin(angle);
+                spokes += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="${r * 0.12}" stroke-linecap="round" />`;
+            }
+
+            return `
+            <g>
+                <!-- 底部暗輪廓 -->
+                <circle cx="${cx}" cy="${cy}" r="${r}" fill="#111827" opacity="0.3" />
+                <!-- 外層金屬圈 -->
+                <circle cx="${cx}" cy="${cy}" r="${r * 0.95}" fill="${p}" />
+                <circle cx="${cx}" cy="${cy}" r="${r * 0.8}" fill="none" stroke="#ffffff" stroke-width="${r * 0.08}" opacity="0.8" />
+                <!-- 核心色圈 -->
+                <circle cx="${cx}" cy="${cy}" r="${r * 0.45}" fill="${a}" />
+                <!-- 刻花輻條 -->
+                ${spokes}
+                <!-- 頂點白珠 -->
+                <circle cx="${cx}" cy="${cy}" r="${r * 0.16}" fill="#ffffff" />
+            </g>`;
+        }
+
+        // 一筒：超級金絲大菊花
+        function renderBigDot() {
+            let pattern = '';
+            // 中圈小太陽花瓣
+            for (let i = 0; i < 16; i++) {
+                let angle = (i * 22.5) * Math.PI / 180;
+                let x1 = 50 + 12 * Math.cos(angle);
+                let y1 = 70 + 12 * Math.sin(angle);
+                let x2 = 50 + 26 * Math.cos(angle);
+                let y2 = 70 + 26 * Math.sin(angle);
+                pattern += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${colors.red}" stroke-width="4.5" stroke-linecap="round" />`;
+                pattern += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />`;
+            }
+            return `
+            <g>
+                <!-- 外大藍圈 -->
+                <circle cx="50" cy="70" r="34" fill="${colors.blue}" />
+                <circle cx="50" cy="70" r="31" fill="none" stroke="#ffffff" stroke-width="1.5" />
+                <!-- 紅色輻射輪 -->
+                ${pattern}
+                <!-- 內心藍紅疊加 -->
+                <circle cx="50" cy="70" r="11" fill="${colors.green}" />
+                <circle cx="50" cy="70" r="7" fill="#ffffff" />
+                <circle cx="50" cy="70" r="3" fill="${colors.red}" />
+            </g>`;
+        }
+
+        // 3. 萬子 (Characters) - 書法行楷
+        function renderCharacter(numText, colorVal = '#111827') {
+            return `
+            <g>
+                <!-- 上方數字 -->
+                <text x="50" y="46" font-family="'Noto Serif TC', serif" font-weight="900" font-size="34" fill="${colorVal}" text-anchor="middle" dominant-baseline="middle">
+                    ${numText}
+                </text>
+                <!-- 下方繁體「萬」字，採經典刻痕深凹陷效果 -->
+                <text x="51.5" y="103.5" font-family="'Noto Serif TC', serif" font-weight="900" font-size="44" fill="${colors.redShadow}" text-anchor="middle" dominant-baseline="middle" opacity="0.4">
+                    萬
+                </text>
+                <text x="50" y="102" font-family="'Noto Serif TC', serif" font-weight="900" font-size="44" fill="${colors.red}" text-anchor="middle" dominant-baseline="middle">
+                    萬
+                </text>
+            </g>`;
+        }
+
+        // 4. 字牌 (Honors)
+        function renderWindOrDragon(text, isDragon = false, charColor = '#111827') {
+            const fontSz = isDragon ? 54 : 48;
+            const yPos = isDragon ? 72 : 72;
+            const shadowC = charColor === colors.red ? '#7f1d1d' : (charColor === colors.green ? '#14532d' : '#1e293b');
+            
+            // 白板有特殊的藍黑花框，中間留白
+            if (text === '白') {
+                return `
+                <g>
+                    <!-- 經典重疊花框 -->
+                    <rect x="18" y="22" width="64" height="96" rx="6" fill="none" stroke="${colors.blue}" stroke-width="6" />
+                    <rect x="23" y="27" width="54" height="86" rx="4" fill="none" stroke="#ffffff" stroke-width="2" />
+                    <rect x="27" y="31" width="46" height="78" rx="2" fill="none" stroke="${colors.blue}" stroke-width="2" />
+                    
+                    <!-- 內部凹型裝飾角 -->
+                    <path d="M22,34 L28,34 L28,28 M78,34 L72,34 L72,28 M22,106 L28,106 L28,112 M78,106 L72,106 L72,112" stroke="${colors.blue}" stroke-width="2" fill="none"/>
+                </g>`;
+            }
+
+            return `
+            <g>
+                <text x="50.5" y="${yPos + 0.5}" font-family="'Noto Serif TC', serif" font-weight="900" font-size="${fontSz}" fill="${shadowC}" text-anchor="middle" dominant-baseline="middle" opacity="0.4">
+                    ${text}
+                </text>
+                <text x="50" y="${yPos}" font-family="'Noto Serif TC', serif" font-weight="900" font-size="${fontSz}" fill="${charColor}" text-anchor="middle" dominant-baseline="middle">
+                    ${text}
+                </text>
+            </g>`;
+        }
+
+        // 5. 花牌渲染器 - 傳承與遵守「花牌.html」設定與配色規則
+        // 季節牌(春夏秋冬)：黑色數字在左上、紅色中文在右上
+        // 花卉牌(梅蘭竹菊)：紅色數字在左上、黑色中文在右上
+        function renderFlower(text, num, isSeason) {
+            const textColor = isSeason ? colors.red : colors.black;
+            const numColor = isSeason ? colors.black : colors.red;
+            const strokeColor = isSeason ? colors.green : colors.red;
+
+            // 根據切換的樣式渲染插圖
+            let illustration = '';
+            if (flowerStyle === 'elegant') {
+                // 高級藝術手繪雕花插圖
+                illustration = renderElegantFlowerArt(text);
+            } else {
+                // 完全還原自「花牌.html」的經典線條插圖
+                illustration = `
+                <g transform="translate(50, 90)">
+                    <path d="M-15 -10 Q 0 -25 15 -10 L 15 10 L -15 10 Z" fill="none" stroke="${strokeColor}" stroke-width="3"/>
+                </g>`;
+            }
+
+            return `
+            <g>
+                <!-- 數字 (左上) - 完全沿用花牌.html 規格 -->
+                <text x="22" y="32" font-family="'Noto Serif TC', serif" font-weight="900" font-size="24" fill="${numColor}" text-anchor="start">
+                    ${num}
+                </text>
+                
+                <!-- 文字 (右上) - 完全沿用花牌.html 規格 -->
+                <text x="78" y="32" font-family="'Noto Serif TC', serif" font-weight="900" font-size="28" fill="${textColor}" text-anchor="end">
+                    ${text}
+                </text>
+                
+                <!-- 花卉美術圖 -->
+                ${illustration}
+            </g>`;
+        }
+
+        // 藝術彩繪花牌插圖 SVG
+        function renderElegantFlowerArt(text) {
+            switch(text) {
+                case '春': // 新芽與桃花
+                    return `
+                    <g transform="translate(50, 85)">
+                        <path d="M-10,15 C-2,10 -5,-5 -2,-18 C2,-5 -1,10 10,15" stroke="${colors.green}" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <circle cx="2" cy="-10" r="5" fill="#f43f5e" />
+                        <circle cx="-6" cy="-2" r="4.5" fill="#f43f5e" />
+                        <circle cx="7" cy="2" r="4.5" fill="#f43f5e" />
+                        <circle cx="1" cy="-2" r="3" fill="#fef08a" />
+                    </g>`;
+                case '夏': // 盛夏荷花
+                    return `
+                    <g transform="translate(50, 90) scale(0.9)">
+                        <path d="M-18,10 Q0,25 18,10 Q12,-5 0,-15 Q-12,-5 -18,10 Z" fill="#22c55e" opacity="0.6"/>
+                        <path d="M-5,10 C-10,-5 0,-25 0,-25 C0,-25 10,-5 5,10 Z" fill="#ec4899" />
+                        <path d="M-10,10 C-14,0 -2,-15 -2,-15 C-2,-15 10,0 6,10 Z" fill="#f472b6" opacity="0.9"/>
+                    </g>`;
+                case '秋': // 楓葉
+                    return `
+                    <g transform="translate(50, 85) scale(0.9)">
+                        <path d="M0,20 L0,-15 M0,-5 L-12,-12 M0,3 L12,-8 M0,-5 L15,10 M0,3 L-15,12" stroke="#b45309" stroke-width="2.5" />
+                        <path d="M0,-16 L-4,-6 L-14,-8 L-6,0 L-10,10 L0,4 L10,10 L6,0 L14,-8 L4,-6 Z" fill="#ea580c" />
+                    </g>`;
+                case '冬': // 梅與瑞雪
+                    return `
+                    <g transform="translate(50, 85)">
+                        <circle cx="0" cy="5" r="14" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4,2" />
+                        <path d="M-12,12 L12,-12" stroke="#475569" stroke-width="3.5" stroke-linecap="round" />
+                        <circle cx="2" cy="-2" r="5" fill="#e11d48" />
+                        <circle cx="-6" cy="6" r="4" fill="#e11d48" />
+                        <circle cx="2" cy="-2" r="1.5" fill="#ffffff" />
+                    </g>`;
+                case '梅': // 紅梅報喜
+                    return `
+                    <g transform="translate(50, 85)">
+                        <path d="M-10,15 Q5,5 0,-15" fill="none" stroke="#7c2d12" stroke-width="3.5" stroke-linecap="round" />
+                        <circle cx="-4" cy="5" r="5" fill="${colors.red}" />
+                        <circle cx="2" cy="-6" r="6" fill="${colors.red}" />
+                        <circle cx="2" cy="-6" r="1.5" fill="#fef08a" />
+                    </g>`;
+                case '蘭': // 空谷幽蘭
+                    return `
+                    <g transform="translate(50, 85)">
+                        <path d="M-18,15 Q-10,-10 12,-18 M-8,15 Q10,-2 5,-14" fill="none" stroke="${colors.green}" stroke-width="2" stroke-linecap="round" />
+                        <path d="M3,-6 Q15,-10 10,-2 Q2,1 3,-6 Z" fill="#a855f7" />
+                        <circle cx="7" cy="-4" r="2.5" fill="#fef08a" />
+                    </g>`;
+                case '竹': // 節節高升
+                    return `
+                    <g transform="translate(50, 85)">
+                        <line x1="-4" y1="18" x2="-2" y2="-15" stroke="${colors.green}" stroke-width="4.5" />
+                        <line x1="-4" y1="2" x2="10" y2="-6" stroke="${colors.green}" stroke-width="2" />
+                        <path d="M6,-8 L15,-18 Q12,-10 8,-8 Z" fill="${colors.green}" />
+                        <path d="M2,-5 L10,-12 Q8,-7 4,-5 Z" fill="${colors.green}" />
+                        <!-- 竹節線 -->
+                        <line x1="-7" y1="2" x2="-1" y2="3" stroke="#ffffff" stroke-width="1.5" />
+                    </g>`;
+                case '菊': // 採菊東籬
+                    return `
+                    <g transform="translate(50, 85) scale(0.9)">
+                        <circle cx="0" cy="0" r="6" fill="#eab308" />
+                        <!-- 花瓣圈 -->
+                        <path d="M0,0 Q-8,-15 0,-20 Q8,-15 0,0" fill="#f97316" />
+                        <path d="M0,0 Q-15,-8 -20,0 Q-15,8 0,0" fill="#f97316" />
+                        <path d="M0,0 Q8,15 0,20 Q-8,15 0,0" fill="#f97316" />
+                        <path d="M0,0 Q15,8 20,0 Q15,-8 0,0" fill="#f97316" />
+                        <path d="M0,0 L-10,-10 M0,0 L10,10 M0,0 L-10,10 M0,0 L10,-10" stroke="#f97316" stroke-width="3" />
+                    </g>`;
+                default:
+                    return '';
+            }
+        }
+
+        // 麻將牌池資料定義
+        const mahjongData = {
+            bamboos: [
+                { id: 'b1', name: '一條', type: 'bamboos', isSpecial: true, draw: renderPeacock, desc: '傳統雕刻中常用神鳥、孔雀或喜鵲代替，寓意喜鵲登梅。' },
+                { id: 'b2', name: '二條', type: 'bamboos', draw: () => renderBambooStick(36, 70, 0) + renderBambooStick(64, 70, 0), desc: '雙條並立，對齊工整，色調深沉。' },
+                { id: 'b3', name: '三條', type: 'bamboos', draw: () => renderBambooStick(50, 42, 0) + renderBambooStick(34, 98, 0, 'blue') + renderBambooStick(66, 98, 0, 'blue'), desc: '上為一條翠綠，下為兩條靛藍，鼎足之勢。' },
+                { id: 'b4', name: '四條', type: 'bamboos', draw: () => renderBambooStick(34, 42, 0) + renderBambooStick(66, 42, 0) + renderBambooStick(34, 98, 0, 'blue') + renderBambooStick(66, 98, 0, 'blue'), desc: '工整矩陣，紅綠分明，對角輝映。' },
+                { id: 'b5', name: '五條', type: 'bamboos', draw: () => renderBambooStick(26, 40, 0) + renderBambooStick(74, 40, 0) + renderBambooStick(50, 70, 0, 'red') + renderBambooStick(26, 100, 0) + renderBambooStick(74, 100, 0), desc: '四角翠綠包圍核心硃砂紅，正氣凜然。' },
+                { id: 'b6', name: '六條', type: 'bamboos', draw: () => renderBambooStick(34, 34, 0) + renderBambooStick(66, 34, 0) + renderBambooStick(34, 70, 0, 'blue') + renderBambooStick(66, 70, 0, 'blue') + renderBambooStick(34, 106, 0) + renderBambooStick(66, 106, 0), desc: '三層雙條排列，上綠、中藍、下綠。' },
+                { id: 'b7', name: '七條', type: 'bamboos', draw: () => renderBambooStick(50, 32, 0) + renderBambooStick(26, 74, 0) + renderBambooStick(50, 74, 0) + renderBambooStick(74, 74, 0) + renderBambooStick(26, 110, 0, 'blue') + renderBambooStick(50, 110, 0, 'blue') + renderBambooStick(74, 110, 0, 'blue'), desc: '上為一綠，下為六條，呈現精緻皇冠排布。' },
+                // 核心主角：八條 W / M 雙層深度調整與還原！
+                { 
+                    id: 'b8', 
+                    name: '八條', 
+                    type: 'bamboos', 
+                    draw: () => {
+                        // 上排 W 型：\ / \ /
+                        let topRow = renderBambooStick(22, 44, -22) + 
+                                     renderBambooStick(40, 44, 22) + 
+                                     renderBambooStick(60, 44, -22) + 
+                                     renderBambooStick(78, 44, 22);
+                        // 下排 M 型：/ \ / \
+                        let bottomRow = renderBambooStick(22, 96, 22) + 
+                                        renderBambooStick(40, 96, -22) + 
+                                        renderBambooStick(60, 96, 22) + 
+                                        renderBambooStick(78, 96, -22);
+                        return topRow + bottomRow;
+                    }, 
+                    desc: '【本款主打修正牌型】依上傳之圖片高精度復刻！上方採「W型」歪斜擺放、下方採「M型」擺放，形成古典和諧的雙對稱幾何。每一條竹節由三個圓潤綠玉節點（Beads）重疊，在防刻割外緣外完美氣合白色內雕線（Inline），徹底消除粗糙直條帶來的怪異感！' 
+                },
+                { 
+                    id: 'b9', 
+                    name: '九條', 
+                    type: 'bamboos', 
+                    draw: () => {
+                        let r1 = renderBambooStick(26, 35, 0) + renderBambooStick(50, 35, 0) + renderBambooStick(74, 35, 0);
+                        let r2 = renderBambooStick(26, 70, 0, 'red') + renderBambooStick(50, 70, 0, 'red') + renderBambooStick(74, 70, 0, 'red');
+                        let r3 = renderBambooStick(26, 105, 0, 'blue') + renderBambooStick(50, 105, 0, 'blue') + renderBambooStick(74, 105, 0, 'blue');
+                        return r1 + r2 + r3;
+                    }, 
+                    desc: '三層三條，由上至下依序為：茂林綠、朱櫻紅、深海藍，極具收藏美學。' 
+                }
+            ],
+            flowers: [
+                { id: 'f1', name: '春', type: 'flowers', isSeason: true, num: '1', draw: () => renderFlower('春', '1', true), desc: '第一季「春」。依照您提供之規則：黑色數字在左上，紅色中文在右上，呈現典雅中國風。' },
+                { id: 'f2', name: '夏', type: 'flowers', isSeason: true, num: '2', draw: () => renderFlower('夏', '2', true), desc: '第二季「夏」。黑色數字與紅色中文之極致撞色。' },
+                { id: 'f3', name: '秋', type: 'flowers', isSeason: true, num: '3', draw: () => renderFlower('秋', '3', true), desc: '第三季「秋」。霜葉紅於二月花，秋風落木蕭蕭。' },
+                { id: 'f4', name: '冬', type: 'flowers', isSeason: true, num: '4', draw: () => renderFlower('冬', '4', true), desc: '第四季「冬」。寒梅覆雪，歲寒三友之始。' },
+                { id: 'f5', name: '梅', type: 'flowers', isSeason: false, num: '1', draw: () => renderFlower('梅', '1', false), desc: '花中君子「梅」。依照您提供之規則：紅色數字在左上，黑色中文在右上，反轉美學！' },
+                { id: 'f6', name: '蘭', type: 'flowers', isSeason: false, num: '2', draw: () => renderFlower('蘭', '2', false), desc: '花中君子「蘭」。幽谷蘭香，紅色數字，黑色文字。' },
+                { id: 'f7', name: '竹', type: 'flowers', isSeason: false, num: '3', draw: () => renderFlower('竹', '3', false), desc: '花中君子「竹」。綠骨挺拔，寧折不彎。紅色數字，黑色文字。' },
+                { id: 'f8', name: '菊', type: 'flowers', isSeason: false, num: '4', draw: () => renderFlower('菊', '4', false), desc: '花中君子「菊」。陶潛採菊，隱逸高潔。紅色數字，黑色文字。' }
+            ],
+            dots: [
+                { id: 'd1', name: '一筒', type: 'dots', draw: renderBigDot, desc: '尊貴獨享的中心五彩太極花輪，極具視覺張力。' },
+                { id: 'd2', name: '二筒', type: 'dots', draw: () => renderDot(50, 38, 16, 'green', 'red') + renderDot(50, 102, 16, 'blue', 'red'), desc: '一綠一藍，上下呼應，核心微雕硃砂。' },
+                { id: 'd3', name: '三筒', type: 'dots', draw: () => renderDot(26, 34, 11, 'blue', 'red') + renderDot(50, 70, 11, 'red', 'green') + renderDot(74, 106, 11, 'green', 'red'), desc: '斜向星雲排列，三色流光溢彩。' },
+                { id: 'd4', name: '四筒', type: 'dots', draw: () => renderDot(32, 38, 13, 'green', 'red') + renderDot(68, 38, 13, 'blue', 'red') + renderDot(32, 102, 13, 'blue', 'red') + renderDot(68, 102, 13, 'green', 'red'), desc: '四角均衡排布，同心雙環。' },
+                { id: 'd5', name: '五筒', type: 'dots', draw: () => renderDot(26, 34, 11, 'blue', 'red') + renderDot(74, 34, 11, 'green', 'red') + renderDot(50, 70, 12, 'red', 'green') + renderDot(26, 106, 11, 'green', 'red') + renderDot(74, 106, 11, 'blue', 'red'), desc: '核心大紅太陽輪，四周翠綠與天藍。' },
+                { id: 'd6', name: '六筒', type: 'dots', draw: () => renderDot(32, 34, 11, 'green', 'red') + renderDot(68, 34, 11, 'green', 'red') + renderDot(32, 70, 11, 'red', 'green') + renderDot(68, 70, 11, 'red', 'green') + renderDot(32, 106, 11, 'blue', 'red') + renderDot(68, 106, 11, 'blue', 'red'), desc: '上下雙列，宛如繁星，色彩錯落有致。' },
+                { id: 'd7', name: '七筒', type: 'dots', draw: () => renderDot(26, 26, 9, 'green', 'red') + renderDot(50, 42, 9, 'green', 'red') + renderDot(74, 58, 9, 'green', 'red') + renderDot(32, 94, 11, 'blue', 'red') + renderDot(68, 94, 11, 'blue', 'red') + renderDot(32, 122, 11, 'blue', 'red') + renderDot(68, 122, 11, 'blue', 'red'), desc: '北斗七星排布，上三斜、下四方。' },
+                { id: 'd8', name: '八筒', type: 'dots', draw: () => renderDot(32, 28, 10, 'blue', 'red') + renderDot(68, 28, 10, 'blue', 'red') + renderDot(32, 56, 10, 'blue', 'red') + renderDot(68, 56, 10, 'blue', 'red') + renderDot(32, 84, 10, 'blue', 'red') + renderDot(68, 84, 10, 'blue', 'red') + renderDot(32, 112, 10, 'blue', 'red') + renderDot(68, 112, 10, 'blue', 'red'), desc: '長型八星天珠，規整對齊。' },
+                { id: 'd9', name: '九筒', type: 'dots', draw: () => renderDot(26, 32, 10, 'green', 'red') + renderDot(50, 32, 10, 'green', 'red') + renderDot(74, 32, 10, 'green', 'red') + renderDot(26, 70, 10, 'red', 'green') + renderDot(50, 70, 10, 'red', 'green') + renderDot(74, 70, 10, 'red', 'green') + renderDot(26, 108, 10, 'blue', 'red') + renderDot(50, 108, 10, 'blue', 'red') + renderDot(74, 108, 10, 'blue', 'red'), desc: '九九歸一，九星疊加，繁花似錦。' }
+            ],
+            characters: [
+                { id: 'c1', name: '一萬', type: 'characters', draw: () => renderCharacter('一'), desc: '上繪繁體或標準一字，橫刀雕刻。' },
+                { id: 'c2', name: '二萬', type: 'characters', draw: () => renderCharacter('二'), desc: '均衡兩道雕痕，蒼勁有力。' },
+                { id: 'c3', name: '三萬', type: 'characters', draw: () => renderCharacter('三'), desc: '天地人三才，筆畫流暢。' },
+                { id: 'c4', name: '四萬', type: 'characters', draw: () => renderCharacter('四'), desc: '方圓有致，剛柔並濟。' },
+                { id: 'c5', name: '五萬', type: 'characters', draw: () => renderCharacter('五'), desc: '行書筆意，古樸雄健。' },
+                { id: 'c6', name: '六萬', type: 'characters', draw: () => renderCharacter('六'), desc: '大氣磅礡，極富書法美感。' },
+                { id: 'c7', name: '七萬', type: 'characters', draw: () => renderCharacter('七'), desc: '挺拔剛硬，金線勾勒。' },
+                { id: 'c8', name: '八萬', type: 'characters', draw: () => renderCharacter('八'), desc: '開合有度，端莊大方。' },
+                { id: 'c9', name: '九萬', type: 'characters', draw: () => renderCharacter('九'), desc: '九五之尊，九九連綿，硃砂重彩。' }
+            ],
+            honors: [
+                { id: 'h1', name: '東', type: 'honors', draw: () => renderWindOrDragon('東', false, colors.black), desc: '東風。黑墨重雕，主位。' },
+                { id: 'h2', name: '南', type: 'honors', draw: () => renderWindOrDragon('南', false, colors.black), desc: '南風。生機勃勃。' },
+                { id: 'h3', name: '西', type: 'honors', draw: () => renderWindOrDragon('西', false, colors.black), desc: '西風。夕陽西下，沉穩大氣。' },
+                { id: 'h4', name: '北', type: 'honors', draw: () => renderWindOrDragon('北', false, colors.black), desc: '北風。朔風凛冽。' },
+                { id: 'h5', name: '中', type: 'honors', draw: () => renderWindOrDragon('中', true, colors.red), desc: '紅中。硃砂紅雕，象徵大地與中正。' },
+                { id: 'h6', name: '發', type: 'honors', draw: () => renderWindOrDragon('發', true, colors.green), desc: '發財。翠綠雕色，寓意財富與繁盛。' },
+                { id: 'h7', name: '白', type: 'honors', draw: () => renderWindOrDragon('白', true), desc: '白板。經典重疊靛藍邊框，無字勝有字。' }
+            ]
+        };
+
+        // 全域初始化與 DOM 生成
+        window.addEventListener('DOMContentLoaded', () => {
+            generateGrid('bamboos', 'grid-bamboos');
+            generateGrid('flowers', 'grid-flowers');
+            generateGrid('dots', 'grid-dots');
+            generateGrid('characters', 'grid-characters');
+            generateGrid('honors', 'grid-honors');
+
+            // 預設將「八條」填入 3D 檢視器
+            const b8 = mahjongData.bamboos.find(b => b.id === 'b8');
+            selectTile(b8, document.querySelector(`[data-id="b8"]`));
+
+            // 初始化 3D 檢視器的滑鼠拖曳/懸停傾斜效果
+            setup3DInspectorEffect();
+        });
+
+        // 生成單一牌系的牌面
+        function generateGrid(category, gridId) {
+            const container = document.getElementById(gridId);
+            container.innerHTML = '';
+            
+            mahjongData[category].forEach(tile => {
+                const tileDiv = document.createElement('div');
+                tileDiv.className = 'mj-tile-container inline-block cursor-pointer';
+                tileDiv.setAttribute('data-id', tile.id);
+                tileDiv.innerHTML = `
+                    <div class="mj-tile-3d relative w-[72px] h-[100px] transition-transform duration-200">
+                        <!-- 側面厚度 -->
+                        <div class="mj-side mj-side-top"></div>
+                        <div class="mj-side mj-side-bottom"></div>
+                        <div class="mj-side mj-side-left"></div>
+                        <div class="mj-side mj-side-right"></div>
+                        
+                        <!-- 牌身側面色層 (例如綠底) -->
+                        <div class="mj-side mj-side-color mj-side-color-top"></div>
+                        <div class="mj-side mj-side-color mj-side-color-bottom"></div>
+                        <div class="mj-side mj-side-color mj-side-color-left"></div>
+                        <div class="mj-side mj-side-color mj-side-color-right"></div>
+                        
+                        <!-- 正面 SVG -->
+                        <div class="mj-face mj-front flex items-center justify-center p-1.5">
+                            <svg viewBox="0 0 100 140" class="w-full h-full">
+                                ${tile.draw()}
+                            </svg>
+                        </div>
+                        <!-- 背面 -->
+                        <div class="mj-face mj-back"></div>
+                    </div>
+                `;
+
+                // 綁定點擊事件
+                tileDiv.addEventListener('click', (e) => {
+                    selectTile(tile, tileDiv);
+                    addToHand(tile);
+                });
+
+                container.appendChild(tileDiv);
+            });
+        }
+
+        // 選擇某張牌並載入左邊檢視儀
+        function selectTile(tile, element) {
+            activeTileData = tile;
+            
+            // 清除之前的選中狀態
+            document.querySelectorAll('.mj-tile-container .mj-tile-3d').forEach(el => {
+                el.classList.remove('selected-tile');
+            });
+
+            // 標示當前選中
+            if (element) {
+                const innerTile = element.querySelector('.mj-tile-3d');
+                if (innerTile) innerTile.classList.add('selected-tile');
+            }
+
+            // 更新左側巨型檢視器內容
+            document.getElementById('inspector-svg').innerHTML = `
+                <svg viewBox="0 0 100 140" class="w-full h-full drop-shadow-lg">
+                    ${tile.draw()}
+                </svg>
+            `;
+
+            // 更新文字詳情
+            document.getElementById('tile-detail-title').innerText = `${tile.name} (${tile.id.toUpperCase()})`;
+            document.getElementById('tile-detail-desc').innerText = tile.desc;
+
+            // 分類徽章
+            const badge = document.getElementById('tile-detail-badge');
+            badge.innerText = getCategoryName(tile.type);
+            badge.className = `inline-block mt-1 px-2.5 py-0.5 text-xs font-bold rounded-full ${getCategoryStyle(tile.type)}`;
+        }
+
+        // 類別輔助
+        function getCategoryName(type) {
+            switch(type) {
+                case 'bamboos': return '條子牌 (Bamboos)';
+                case 'flowers': return '花卉季節牌 (Flowers & Seasons)';
+                case 'dots': return '筒子牌 (Dots)';
+                case 'characters': return '萬子牌 (Characters)';
+                case 'honors': return '大字牌 (Honors)';
+            }
+        }
+
+        function getCategoryStyle(type) {
+            switch(type) {
+                case 'bamboos': return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+                case 'flowers': return 'bg-rose-500/20 text-rose-300 border border-rose-500/30';
+                case 'dots': return 'bg-sky-500/20 text-sky-300 border border-sky-500/30';
+                case 'characters': return 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
+                case 'honors': return 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
+            }
+        }
+
+        // 更換主題色
+        function changeTheme(themeName, color1, color2) {
+            document.body.className = `theme-${themeName} p-4 md:p-8`;
+            document.body.style.background = `radial-gradient(circle at center, ${color1} 0%, ${color2} 100%)`;
+            showToast(`已切換為：${themeName === 'green' ? '經典竹綠' : themeName === 'black' ? '曜石深黑' : themeName === 'yellow' ? '皇家琥珀黃' : '宮廷烈焰紅'}`);
+            playTileSound();
+        }
+
+        // 切換花牌美術風格 (Elegant 藝術 vs Classic 經典線條)
+        function setFlowerStyle(style) {
+            flowerStyle = style;
+            
+            const btnElegant = document.getElementById('btn-flower-elegant');
+            const btnClassic = document.getElementById('btn-flower-classic');
+
+            if (style === 'elegant') {
+                btnElegant.className = 'px-2.5 py-1 rounded bg-amber-500 text-slate-900 font-bold transition';
+                btnClassic.className = 'px-2.5 py-1 rounded text-slate-300 transition';
+            } else {
+                btnClassic.className = 'px-2.5 py-1 rounded bg-amber-500 text-slate-900 font-bold transition';
+                btnElegant.className = 'px-2.5 py-1 rounded text-slate-300 transition';
+            }
+
+            // 重繪花牌與檢視儀
+            generateGrid('flowers', 'grid-flowers');
+            
+            // 如果當前正在選中花牌，同步更新巨型檢視器
+            if (activeTileData && activeTileData.type === 'flowers') {
+                selectTile(activeTileData, document.querySelector(`[data-id="${activeTileData.id}"]`));
+            }
+            
+            showToast(`花牌風格已切換為：${style === 'elegant' ? '藝術手繪彩繪' : '完全繼承原花牌線條'}`);
+            playTileSound();
+        }
+
+        // 巨型檢視器 3D 動態傾斜
+        function setup3DInspectorEffect() {
+            const container = document.getElementById('inspector-tile').parentElement.parentElement;
+            const tile3D = document.getElementById('inspector-tile');
+
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left; // 游標相對於容器的 X
+                const y = e.clientY - rect.top;  // 游標相對於容器的 Y
+                
+                // 計算傾斜角度 (最大 30 度)
+                const rotateX = -((y - rect.height / 2) / (rect.height / 2)) * 30;
+                const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 30;
+
+                tile3D.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            // 滑鼠離開時還原基本 3D 視角
+            container.addEventListener('mouseleave', () => {
+                tile3D.style.transform = 'rotateX(20deg) rotateY(-20deg)';
+                tile3D.style.transition = 'transform 0.5s ease-out';
+            });
+
+            container.addEventListener('mouseenter', () => {
+                tile3D.style.transition = 'none';
+            });
+        }
+
+        // 複製高畫質 SVG
+        function copyTileSVG() {
+            if (!activeTileData) return;
+            const tempSvg = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140" width="300" height="420">
+    <!-- 圓角防割牌面基底 -->
+    <rect width="100" height="140" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="2"/>
+    ${activeTileData.draw()}
+</svg>`;
+            
+            // 使用內建相容拷貝法
+            const el = document.createElement('textarea');
+            el.value = tempSvg.trim();
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            showToast(`已成功將【${activeTileData.name}】的向量 SVG 代碼複製至剪貼簿！`);
+        }
+
+
+        // ==================== 16張手牌組建與判定演算法 ====================
+        
+        function addToHand(tile) {
+            if (userHand.length >= 16) {
+                showToast("⚠️ 台灣麻將手牌最多只能容納 16 張牌喔！");
+                return;
+            }
+            
+            userHand.push(tile);
+            playTileSound();
+            renderUserHand();
+        }
+
+        function removeFromHand(index) {
+            userHand.splice(index, 1);
+            playTileSound();
+            renderUserHand();
+        }
+
+        function clearUserHand() {
+            userHand = [];
+            playTileSound();
+            renderUserHand();
+            showToast("手牌已全部清空。");
+        }
+
+        // 一鍵理牌：按 萬、筒、條、風、三元、花 及大小排序
+        function sortUserHand() {
+            const suitOrder = { 'characters': 1, 'dots': 2, 'bamboos': 3, 'honors': 4, 'flowers': 5 };
+            
+            userHand.sort((a, b) => {
+                if (suitOrder[a.type] !== suitOrder[b.type]) {
+                    return suitOrder[a.type] - suitOrder[b.type];
+                }
+                // 同類型按內部 ID 排序
+                return a.id.localeCompare(b.id);
+            });
+
+            playTileSound();
+            renderUserHand();
+            showToast("🀐 理牌完成！已自動按牌系歸類排列。");
+        }
+
+        // 渲染手牌
+        function renderUserHand() {
+            const tray = document.getElementById('user-hand-tray');
+            const countText = document.getElementById('hand-count');
+            
+            countText.innerText = userHand.length;
+
+            if (userHand.length === 0) {
+                tray.innerHTML = `<div id="hand-placeholder" class="text-sm text-slate-500">（空空如也，點擊上方牌面加入手牌）</div>`;
+                document.getElementById('analysis-box').classList.add('hidden');
+                return;
+            }
+
+            tray.innerHTML = '';
+            userHand.forEach((tile, index) => {
+                const handTile = document.createElement('div');
+                handTile.className = 'w-[56px] h-[78px] bg-white text-slate-900 rounded-lg flex items-center justify-center p-1 border-2 border-slate-300 relative cursor-pointer hover:-translate-y-2 transition-transform shadow-md';
+                handTile.title = "點擊可移出此牌";
+                handTile.innerHTML = `
+                    <svg viewBox="0 0 100 140" class="w-full h-full">
+                        ${tile.draw()}
+                    </svg>
+                    <!-- 懸停刪除圖章 -->
+                    <div class="absolute inset-0 bg-red-600/90 text-white font-bold text-xs flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity rounded-lg">
+                        移出
+                    </div>
+                `;
+                
+                handTile.addEventListener('click', () => {
+                    removeFromHand(index);
+                });
+
+                tray.appendChild(handTile);
+            });
+
+            // 分析牌型
+            analyzeHand();
+        }
+
+        // 判斷台灣麻將大牌牌型
+        function analyzeHand() {
+            const analysisBox = document.getElementById('analysis-box');
+            analysisBox.classList.remove('hidden');
+            
+            let patterns = [];
+            
+            // 算各種牌的數量
+            const counts = {};
+            userHand.forEach(t => {
+                counts[t.id] = (counts[t.id] || 0) + 1;
+            });
+
+            const types = {};
+            userHand.forEach(t => {
+                types[t.type] = (types[t.type] || 0) + 1;
+            });
+
+            // 1. 大三元 (中發白各三張以上)
+            if (counts['h5'] >= 3 && counts['h6'] >= 3 && counts['h7'] >= 3) {
+                patterns.push("🏆 【大三元】 (8台)");
+            } else if ((counts['h5'] >= 2 && counts['h6'] >= 3 && counts['h7'] >= 3) || 
+                       (counts['h5'] >= 3 && counts['h6'] >= 2 && counts['h7'] >= 3) || 
+                       (counts['h5'] >= 3 && counts['h6'] >= 3 && counts['h7'] >= 2)) {
+                // 2. 小三元
+                patterns.push("🥈 【小三元】 (4台)");
+            }
+
+            // 3. 大四喜 (東南西北各三張)
+            if (counts['h1'] >= 3 && counts['h2'] >= 3 && counts['h3'] >= 3 && counts['h4'] >= 3) {
+                patterns.push("👑 【大四喜】 (16台)");
+            } else if ((counts['h1'] >= 2 && counts['h2'] >= 3 && counts['h3'] >= 3 && counts['h4'] >= 3) ||
+                       (counts['h1'] >= 3 && counts['h2'] >= 2 && counts['h3'] >= 3 && counts['h4'] >= 3) ||
+                       (counts['h1'] >= 3 && counts['h2'] >= 3 && counts['h3'] >= 2 && counts['h4'] >= 3) ||
+                       (counts['h1'] >= 3 && counts['h2'] >= 3 && counts['h3'] >= 3 && counts['h4'] >= 2)) {
+                // 4. 小四喜
+                patterns.push("🎖️ 【小四喜】 (8台)");
+            }
+
+            // 5. 字一色 (全都是字牌)
+            const totalHonors = (types['honors'] || 0);
+            if (totalHonors === userHand.length && userHand.length >= 10) {
+                patterns.push("💎 【字一色】 (16台)");
+            }
+
+            // 6. 綠一色 (全部由二條、三條、四條、六條、八條及發財組成)
+            const greenIds = ['b2', 'b3', 'b4', 'b6', 'b8', 'h6'];
+            let isGreenOneSuit = userHand.length > 0;
+            userHand.forEach(t => {
+                if (!greenIds.includes(t.id)) isGreenOneSuit = false;
+            });
+            if (isGreenOneSuit && userHand.length >= 8) {
+                patterns.push("🌲 【綠一色】 (16台 - 極珍稀)");
+            }
+
+            // 7. 花牌判定
+            let flowerCount = types['flowers'] || 0;
+            if (flowerCount === 8) {
+                patterns.push("💮 【八仙過海】 (8台 - 拿滿八張花牌！)");
+            } else if (flowerCount === 7) {
+                patterns.push("🎋 【七搶一】 (8台)");
+            } else if (flowerCount >= 4) {
+                // 檢查是否湊齊春夏秋冬四季或梅蘭竹菊四花
+                const hasSeasons = counts['f1'] && counts['f2'] && counts['f3'] && counts['f4'];
+                const hasFlowers = counts['f5'] && counts['f6'] && counts['f7'] && counts['f8'];
+                if (hasSeasons) patterns.push("🍁 【花牌：春夏秋冬一組】 (2台)");
+                if (hasFlowers) patterns.push("💐 【花牌：梅蘭竹菊一組】 (2台)");
+            }
+
+            // 渲染判定結果
+            if (patterns.length > 0) {
+                analysisBox.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-amber-400">🔥 達成傳奇大牌牌型：</span>
+                        <div class="flex flex-wrap gap-2">
+                            ${patterns.map(p => `<span class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded font-black text-[10px]">${p}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                analysisBox.innerHTML = `<span>⚖️ 目前尚未偵測到組合大牌。努力湊一組大三元、大四喜、綠一色或春夏秋冬吧！</span>`;
+            }
+        }
+    </script>
+</body>
+</html>

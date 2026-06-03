@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正宗台灣16張麻將實戰教室 PRO - 嚴選情境與平面美學</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@700;900&display=swap');
+        
+        :root {
+            /* 響應式平面牌寬高變數 */
+            --tile-w: 36px;
+            --tile-h: 50px;
+            --table-color-1: #064e3b;
+            --table-color-2: #022c22;
+        }
+
+        @media (min-width: 640px) {
+            :root {
+                --tile-w: 48px;
+                --tile-h: 66px;
+            }
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #05070c;
+            overflow-x: hidden;
+        }
+
+        /* 擬真綠呢麻將桌平面質感 */
+        .felt-table {
+            background: radial-gradient(circle, var(--table-color-1) 0%, var(--table-color-2) 100%);
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.9);
+            transition: background 0.5s ease;
+        }
+
+        /* 扁平化麻將牌設計 (平面高階質感) */
+        .mj-tile-container {
+            display: inline-block;
+        }
+
+        .mj-flat-tile {
+            width: var(--tile-w);
+            height: var(--tile-h);
+            position: relative;
+            background: #ffffff;
+            border-radius: 4px;
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.15), 
+                0 1px 2px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+        }
+
+        @media (min-width: 640px) {
+            .mj-flat-tile {
+                border-radius: 6px;
+            }
+        }
+
+        /* 模擬麻將正面與背面黏合的平面視覺 (雙層外圍邊框) */
+        .mj-flat-tile::after {
+            content: '';
+            position: absolute;
+            inset: -2.5px;
+            border-radius: 6px;
+            z-index: -1;
+            transition: background-color 0.3s ease;
+        }
+
+        @media (min-width: 640px) {
+            .mj-flat-tile::after {
+                inset: -3.5px;
+                border-radius: 8px;
+            }
+        }
+
+        /* 牌背與外層配色主題 (與 theme-* 同步) */
+        .theme-green .mj-flat-tile::after, .theme-green .mj-back { background-color: #15803d; }
+        .theme-black .mj-flat-tile::after, .theme-black .mj-back { background-color: #0f172a; }
+        .theme-yellow .mj-flat-tile::after, .theme-yellow .mj-back { background-color: #b45309; }
+        .theme-red .mj-flat-tile::after, .theme-red .mj-back { background-color: #be123c; }
+
+        /* 牌背花紋結構 */
+        .mj-back {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 懸停動態：平面卡片微微上浮 */
+        .mj-tile-container-active .mj-flat-tile:hover {
+            cursor: pointer;
+            transform: translateY(-5px);
+            box-shadow: 
+                0 10px 16px -4px rgba(0, 0, 0, 0.3), 
+                0 4px 8px -1px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 聽牌光圈指示燈 */
+        .ring-green-highlight {
+            outline: 2.5px solid #22c55e;
+            outline-offset: 3.5px;
+        }
+        .ring-yellow-highlight {
+            outline: 2.5px solid #eab308;
+            outline-offset: 3.5px;
+        }
+        .ring-red-highlight {
+            outline: 2.5px solid #ef4444;
+            outline-offset: 3.5px;
+        }
+
+        /* 自訂滾動條 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #05070c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body class="theme-green text-gray-100 min-h-screen flex overflow-hidden">
+
+    <!-- 左側情境分類選單：包含嚴選台麻實戰演練 -->
+    <aside id="desktop-sidebar" class="hidden lg:flex flex-col w-80 bg-gray-950 border-r border-gray-800 shrink-0 h-screen select-none z-30">
+        <!-- 品牌與規格 -->
+        <div class="p-5 border-b border-gray-900 bg-gray-900/30">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl animate-pulse">🀄</span>
+                <div>
+                    <h2 class="text-sm font-black text-emerald-400 tracking-wider">台麻實戰教室 PRO</h2>
+                    <p class="text-[10px] text-gray-500 font-bold">正宗 16張 + 嚴選情境模擬</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 情境分類滾動區域 -->
+        <div class="flex-grow p-4 space-y-5 overflow-y-auto" id="sidebar-scenarios-container">
+            <!-- 由 JavaScript 動態渲染情境分類 -->
+        </div>
+
+        <!-- 頁腳版本 -->
+        <div class="p-4 border-t border-gray-900 text-[10px] text-gray-500 flex justify-between items-center bg-gray-900/10">
+            <span>正宗台灣 16 張規範</span>
+            
+        </div>
+    </aside>
+
+    <!-- 行動端選單抽屜 -->
+    <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 w-72 bg-gray-950 border-r border-gray-800 z-50 transform -translate-x-full transition-transform duration-300 lg:hidden flex flex-col h-screen overflow-y-auto">
+        <div class="p-4 border-b border-gray-900 flex justify-between items-center bg-gray-900">
+            <span class="text-sm font-black text-emerald-400 flex items-center gap-2">🀄 嚴選情境選單</span>
+            <button onclick="toggleMobileSidebar()" class="text-gray-400 hover:text-white p-1">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div id="mobile-sidebar-content" class="flex-grow p-4 space-y-4">
+            <!-- 動態同步內容 -->
+        </div>
+    </aside>
+    <div id="sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/70 z-40 hidden lg:hidden"></div>
+
+    <!-- 右側：主實戰操作區域 -->
+    <div class="flex-1 flex flex-col h-screen overflow-y-auto relative bg-[#05070c]">
+        
+        <!-- 頂部資訊列 -->
+        <header class="bg-gray-900/80 border-b border-gray-800 px-4 py-3 sticky top-0 z-20 backdrop-blur-md">
+            <div class="max-w-6xl mx-auto flex justify-between items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 text-gray-400 hover:text-emerald-400 mr-1 focus:outline-none focus:ring-0">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-xs sm:text-base font-extrabold text-emerald-400 flex items-center gap-2">
+                            台灣 16 張麻將實戰教室 PRO
+                            <span class="bg-emerald-500/15 text-emerald-400 text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full font-normal border border-emerald-500/20">正宗本土台數版</span>
+                        </h1>
+                        <p class="hidden sm:block text-[11px] text-gray-400"></p>
+                    </div>
+                </div>
+                
+                <!-- 主題與美學控制 -->
+                <div class="flex items-center gap-4">
+                    <!-- 進度徽章 -->
+                    <div class="flex items-center gap-1.5 bg-gray-950 px-2.5 py-1 rounded-full border border-gray-800 text-[10px] sm:text-xs">
+                        <span id="stage-badge" class="text-emerald-400 font-bold">第一步：洗牌準備</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要學習雙欄 -->
+        <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- 左欄：大師導師解說面板 -->
+            <div class="lg:col-span-4 bg-gray-900 border border-gray-800 rounded-3xl p-5 flex flex-col justify-between shadow-2xl min-h-[460px] lg:min-h-0">
+                <div>
+                    <!-- 導師個人檔 -->
+                    <div class="flex items-center gap-3 pb-3 border-b border-gray-800 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-xl shadow-lg shadow-emerald-950/50">
+                            👨‍🏫
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm text-gray-200">隨身解說大師</h3>
+                            <p class="text-[10px] text-emerald-400">正宗台麻本土大白話現場拆解</p>
+                        </div>
+                    </div>
+
+                    <!-- 对话泡泡 -->
+                    <div class="bg-gray-950 rounded-2xl p-4 border border-gray-800 min-h-[290px] flex flex-col justify-between">
+                        <div id="tutor-bubble" class="text-xs sm:text-sm leading-relaxed text-gray-300">
+                            歡迎來到正宗台灣麻將實戰教室！<br><br>
+                            我們已經為您整合了<strong>吃牌、碰牌、明槓、暗槓、以及多種符合台數表的精選牌型與自摸情境</strong>！<br><br>
+                            請點選<strong>左側情境選單</strong>挑選您想演練的技巧，或是直接點擊下方「開始洗牌」！
+                        </div>
+                        
+                        <div class="mt-4 flex items-center gap-1.5 text-xs text-yellow-400 font-medium bg-yellow-950/40 w-fit px-2.5 py-1 rounded border border-yellow-900/30">
+                            <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                            <span id="tutor-tip">點擊下方按鈕開始洗牌。</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 流程推進按鈕 -->
+                <div class="pt-4 border-t border-gray-800 space-y-3">
+                    <button id="primary-action-btn" onclick="handlePrimaryAction()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-emerald-950/50 transition-all flex items-center justify-center gap-2 text-base transform active:scale-95">
+                        <span id="btn-icon">🌀</span>
+                        <span id="btn-text">第一步：開始洗牌</span>
+                    </button>
+                    <div class="flex justify-between items-center text-[10px] text-gray-500 px-1">
+                        <span>💡 手機直接點擊牌面即可打牌</span>
+                        <button onclick="resetGame()" class="text-emerald-500 hover:underline flex items-center gap-1">
+                            <i data-lucide="refresh-cw" class="w-2.5 h-2.5"></i>重洗本局
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右欄：綠呢 3D 質感牌桌 -->
+            <div class="lg:col-span-8 flex flex-col gap-4">
+                
+                <div class="felt-table rounded-[32px] p-4 sm:p-6 flex flex-col justify-between min-h-[560px] relative overflow-hidden flex-1 border-4 border-amber-950 shadow-2xl">
+                    
+                    <!-- 自訂非阻塞 Toast 提示框 (取代 alert) -->
+                    <div id="toast-overlay" class="absolute top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-slate-950 text-xs font-black py-2 px-4 rounded-full shadow-2xl border border-yellow-300 flex items-center gap-1.5 z-50 transform scale-0 transition-transform duration-300">
+                        <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                        <span id="toast-text">提示訊息</span>
+                    </div>
+
+                    <!-- 電腦玩家標示 -->
+                    <div class="flex justify-between items-center px-2">
+                        <span class="text-[10px] text-gray-400 bg-black/60 px-2.5 py-1 rounded-full">上家 (電腦)</span>
+                        <span class="text-[10px] text-gray-400 bg-black/60 px-2.5 py-1 rounded-full">對家 (電腦)</span>
+                        <span class="text-[10px] text-gray-400 bg-black/60 px-2.5 py-1 rounded-full">下家 (電腦)</span>
+                    </div>
+
+                    <!-- 牌桌中央：播報看板、棄牌海 -->
+                    <div class="my-4 flex flex-col items-center justify-center flex-1 z-10">
+                        
+                        <!-- 播報看板 -->
+                        <div id="table-status-board" class="w-full max-w-md bg-black/85 backdrop-blur-md rounded-2xl p-5 border border-emerald-500/30 text-center space-y-2 shadow-2xl">
+                            <div class="flex items-center justify-center gap-2 text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span id="board-title">台麻播報員</span>
+                            </div>
+                            <h4 id="board-headline" class="text-sm sm:text-base font-extrabold text-white">第一步：洗牌準備</h4>
+                            <p id="board-body" class="text-xs text-gray-300 leading-relaxed">
+                                大家把所有麻將牌翻到背面雙手用力搓動。這在台灣話叫「洗牌」或「搓牌」，是一局的起點！
+                            </p>
+                        </div>
+
+                        <!-- 棄牌海 -->
+                        <div id="discard-sea-wrapper" class="hidden w-full max-w-md mt-4">
+                            <div class="flex justify-between items-center mb-1 px-1">
+                                <span class="text-[9px] text-emerald-300/60 uppercase font-bold tracking-widest">棄牌海（已打出的廢牌）</span>
+                                <span class="text-[9px] text-emerald-300/40" id="discard-count">共 0 張</span>
+                            </div>
+                            <div id="discard-grid" class="grid grid-cols-6 sm:grid-cols-8 gap-2 p-3 bg-black/45 rounded-xl min-h-[90px] justify-items-center">
+                                <div class="text-white/20 text-xs col-span-full self-center">棄牌海目前是空的</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- 🔔 吃牌、碰牌、槓牌、過牌 互動決策面板 -->
+                    <div id="interactive-action-panel" class="hidden my-3 max-w-md mx-auto w-full bg-amber-950/95 backdrop-blur-md border border-amber-500/40 p-4 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-3 shadow-2xl z-20">
+                        <div class="flex items-center gap-2">
+                            <span class="flex h-2 w-2 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                            </span>
+                            <span id="interactive-panel-text" class="text-xs text-amber-200 font-extrabold">抓到了！有吃碰槓機會！</span>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto justify-end">
+                            <button id="btn-eat-action" onclick="executeMeld('EAT')" class="hidden flex-1 sm:flex-none px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black rounded-lg transition-all transform active:scale-95 shadow">吃牌</button>
+                            <button id="btn-pon-action" onclick="executeMeld('PON')" class="hidden flex-1 sm:flex-none px-4 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-slate-950 text-xs font-black rounded-lg transition-all transform active:scale-95 shadow">碰牌</button>
+                            <button id="btn-kong-action" onclick="executeMeld('KONG')" class="hidden flex-1 sm:flex-none px-4 py-1.5 bg-red-650 hover:bg-red-500 text-white text-xs font-black rounded-lg transition-all transform active:scale-95 shadow">槓牌</button>
+                            <button onclick="executeMeld('PASS')" class="flex-1 sm:flex-none px-4 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs font-bold rounded-lg transition-all">過 (不吃碰槓)</button>
+                        </div>
+                    </div>
+
+                    <!-- 玩家手牌控制區 -->
+                    <div class="w-full space-y-3 z-10">
+                        
+                        <div class="flex justify-between items-center px-1 border-b border-white/10 pb-2">
+                            <div class="flex flex-wrap items-center gap-2 text-xs font-bold text-emerald-300">
+                                <span class="bg-emerald-950 px-2.5 py-0.5 rounded border border-emerald-800">👤 我的手牌 <span id="hand-count-badge" class="bg-emerald-880 text-white px-1.5 ml-1 rounded text-[10px]">0張</span></span>
+                                <!-- 手牌高亮說明 -->
+                                <div id="color-legend" class="hidden flex items-center gap-2 text-[10px]">
+                                    <span class="flex items-center gap-0.5"><span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>已完成</span>
+                                    <span class="flex items-center gap-0.5"><span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>眼睛</span>
+                                    <span class="flex items-center gap-0.5"><span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>未完成</span>
+                                </div>
+                            </div>
+
+                            <!-- 宣告自摸小金按鈕 -->
+                            <div id="win-button-container" class="hidden">
+                                <button id="table-win-btn" onclick="triggerDeclareWin()" class="bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-900 font-black text-xs px-3.5 py-1.5 rounded-full shadow-md shadow-yellow-500/30 border border-yellow-300 flex items-center gap-1.5 transform active:scale-95 transition-all animate-pulse">
+                                    <span class="text-sm">🏆</span> 宣告自摸胡牌！
+                                </button>
+                            </div>
+
+                            <!-- 新摸牌標示槽 -->
+                            <div class="flex items-center gap-1.5">
+                                <span id="draw-badge" class="text-[9px] bg-yellow-950 border border-yellow-900 text-yellow-400 px-1.5 py-0.5 rounded hidden animate-pulse">自摸新張</span>
+                                <div id="drawn-tile-slot" class="mj-tile-container">
+                                    <!-- 摸入牌張 -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 手牌與公開亮牌融合顯示區 -->
+                        <div class="flex justify-center">
+                            <div class="flex flex-wrap items-center justify-center gap-3 bg-black/40 p-3 rounded-2xl border border-white/5 min-h-[90px] w-full transition-all">
+                                <!-- 吃碰槓公開牌組區 -->
+                                <div id="revealed-sets-container" class="flex items-center gap-2 border-r border-white/10 pr-2 empty:hidden"></div>
+                                <!-- 玩家手中保留的手牌 -->
+                                <div id="hand-container" class="flex flex-wrap justify-center gap-1.5 sm:gap-2 flex-1">
+                                    <!-- JS 動態生成 -->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="bg-gray-950 border-t border-gray-900 py-3 text-center text-[11px] text-gray-500">
+            正宗台灣 16 張麻將胡牌公式：$3 \times 5 \text{ 組} + 2 \text{ 張眼睛} = 17 \text{ 張}$！自摸大勝利！
+        </footer>
+
+    </div>
+
+    <!-- JavaScript 核心：向量繪製、主題與情境引擎 -->
+    <script>
+        // 核心調色盤，繼承自牌面展示美學
+        const colors = {
+            green: '#15803d',       // 條子/發 的主色
+            greenShadow: '#0f5127', // 條子陰影
+            red: '#c8102e',         // 中/萬 的主色
+            redShadow: '#8a0a1f',   // 紅色陰影
+            blue: '#0f52ba',        // 筒子/白 的藍色
+            blueShadow: '#0a357a',  // 藍色陰影
+            black: '#1f2937',       // 風字/萬字數字的黑色
+            blackShadow: '#111827'  // 黑色陰影
+        };
+
+        // 條子 (Bamboo Stick) 物理雕刻繪製
+        function renderBambooStick(x, y, angle = 0, colorType = 'green') {
+            const primary = colorType === 'green' ? colors.green : (colorType === 'blue' ? colors.blue : colors.red);
+            const shadow = colorType === 'green' ? colors.greenShadow : (colorType === 'blue' ? colors.blueShadow : colors.redShadow);
+            return `
+            <g transform="translate(${x}, ${y}) rotate(${angle})">
+                <!-- 後方凹槽暗面 -->
+                <path d="M -5 -16 L 5 -16 Q 7 -16 7 -12 Q 5 -5 5 0 Q 5 5 7 12 Q 7 16 5 16 L -5 16 Q -7 16 -7 12 Q -5 5 -5 0 Q -5 -5 -7 -12 Q -7 -16 -5 -16 Z" fill="${shadow}" />
+                <!-- 前方亮色烤漆面 -->
+                <path d="M -3.5 -14.5 L 3.5 -14.5 Q 5 -14.5 5 -11 Q 3.5 -4 3.5 0 Q 3.5 4 5 11 Q 5 14.5 3.5 14.5 L -3.5 14.5 Q -5 14.5 -5 11 Q -3.5 4 -3.5 0 Q -3.5 -4 -5 -11 Q -5 -14.5 -3.5 -14.5 Z" fill="${primary}" />
+                <!-- 高對比白色圓滑內線 -->
+                <line x1="0" y1="-11" x2="0" y2="11" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="4,3" />
+                <!-- 竹節核心中點 -->
+                <circle cx="0" cy="0" r="2.2" fill="#ffffff" />
+            </g>`;
+        }
+
+        // 一條：彩色神鳥孔雀
+        function renderPeacock() {
+            return `
+            <g transform="translate(50, 72) scale(1.05)">
+                <!-- 尾部羽毛翼 -->
+                <path d="M-30,-5 C-42,-30 -10,-45 0,-40 C10,-45 42,-30 30,-5 Z" fill="#0f766e" />
+                <circle cx="-24" cy="-24" r="4.5" fill="#eab308" />
+                <circle cx="-24" cy="-24" r="2" fill="#b91c1c" />
+                <circle cx="24" cy="-24" r="4.5" fill="#eab308" />
+                <circle cx="24" cy="-24" r="2" fill="#b91c1c" />
+                <circle cx="0" cy="-34" r="5" fill="#eab308" />
+                <circle cx="0" cy="-34" r="2.5" fill="#1d4ed8" />
+                <!-- 翅膀 -->
+                <path d="M-20,5 C-26,20 -10,32 5,28 C15,25 18,12 12,0 Z" fill="#b91c1c" />
+                <path d="M20,5 C26,20 10,32 -5,28 C-15,25 -18,12 -12,0 Z" fill="#15803d" />
+                <!-- 鳥體 -->
+                <path d="M-12,-15 C-12,5 -5,24 0,24 C5,24 12,5 12,-15 Z" fill="#1d4ed8" />
+                <path d="M-8,-10 C-8,5 -3,18 0,18 C3,18 8,5 8,-10 Z" fill="#ffffff" opacity="0.3" />
+                <!-- 頸與頭 -->
+                <path d="M-4,-15 C-4,-28 -2,-32 0,-36 C2,-32 4,-28 4,-15 Z" fill="#1d4ed8" />
+                <circle cx="0" cy="-34" r="5.5" fill="#1d4ed8" />
+                <!-- 眼 -->
+                <circle cx="-2" cy="-35" r="1.5" fill="#ffffff" />
+                <circle cx="-2" cy="-35" r="0.7" fill="#000000" />
+                <circle cx="2" cy="-35" r="1.5" fill="#ffffff" />
+                <circle cx="2" cy="-35" r="0.7" fill="#000000" />
+                <!-- 喙 -->
+                <polygon points="0,-32 -3,-28 3,-28" fill="#eab308" />
+                <!-- 腳 -->
+                <line x1="-5" y1="24" x2="-8" y2="34" stroke="#eab308" stroke-width="3" stroke-linecap="round" />
+                <line x1="5" y1="24" x2="8" y2="34" stroke="#eab308" stroke-width="3" stroke-linecap="round" />
+            </g>`;
+        }
+
+        // 筒子 (Concentric Gear Dot) 輻射輪繪製
+        function renderDot(cx, cy, r, primaryColor = 'blue', accentColor = 'red') {
+            const p = colors[primaryColor];
+            const a = colors[accentColor];
+            let spokes = '';
+            const spokeCount = 8;
+            for (let i = 0; i < spokeCount; i++) {
+                let angle = (i * 360 / spokeCount) * Math.PI / 180;
+                let x1 = cx + (r * 0.3) * Math.cos(angle);
+                let y1 = cy + (r * 0.3) * Math.sin(angle);
+                let x2 = cx + (r * 0.72) * Math.cos(angle);
+                let y2 = cy + (r * 0.72) * Math.sin(angle);
+                spokes += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="${r * 0.12}" stroke-linecap="round" />`;
+            }
+            return `
+            <g>
+                <circle cx="${cx}" cy="${cy}" r="${r}" fill="#111827" opacity="0.15" />
+                <circle cx="${cx}" cy="${cy}" r="${r * 0.95}" fill="${p}" />
+                <circle cx="${cx}" cy="${cy}" r="${r * 0.8}" fill="none" stroke="#ffffff" stroke-width="${r * 0.08}" opacity="0.8" />
+                <circle cx="${cx}" cy="${cy}" r="${r * 0.45}" fill="${a}" />
+                ${spokes}
+                <circle cx="${cx}" cy="${cy}" r="${r * 0.16}" fill="#ffffff" />
+            </g>`;
+        }
+
+        // 一筒：五彩大太極太陽輪
+        function renderBigDot() {
+            let pattern = '';
+            for (let i = 0; i < 16; i++) {
+                let angle = (i * 22.5) * Math.PI / 180;
+                let x1 = 50 + 12 * Math.cos(angle);
+                let y1 = 70 + 12 * Math.sin(angle);
+                let x2 = 50 + 26 * Math.cos(angle);
+                let y2 = 70 + 26 * Math.sin(angle);
+                pattern += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${colors.red}" stroke-width="4.5" stroke-linecap="round" />`;
+                pattern += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />`;
+            }
+            return `
+            <g>
+                <circle cx="50" cy="70" r="34" fill="${colors.blue}" />
+                <circle cx="50" cy="70" r="31" fill="none" stroke="#ffffff" stroke-width="1.5" />
+                ${pattern}
+                <circle cx="50" cy="70" r="11" fill="${colors.green}" />
+                <circle cx="50" cy="70" r="7" fill="#ffffff" />
+                <circle cx="50" cy="70" r="3" fill="${colors.red}" />
+            </g>`;
+        }
+
+        // 萬子 (Characters) 繁體書體
+        function renderCharacter(numText, colorVal = '#111827') {
+            return `
+            <g>
+                <text x="50" y="46" font-family="'Noto Serif TC', serif" font-weight="900" font-size="34" fill="${colorVal}" text-anchor="middle" dominant-baseline="middle">
+                    ${numText}
+                </text>
+                <text x="51.5" y="103.5" font-family="'Noto Serif TC', serif" font-weight="900" font-size="44" fill="${colors.redShadow}" text-anchor="middle" dominant-baseline="middle" opacity="0.4">
+                    萬
+                </text>
+                <text x="50" y="102" font-family="'Noto Serif TC', serif" font-weight="900" font-size="44" fill="${colors.red}" text-anchor="middle" dominant-baseline="middle">
+                    萬
+                </text>
+            </g>`;
+        }
+
+        // 字牌與大字 (Dragons) 
+        function renderWindOrDragon(text, isDragon = false, charColor = '#111827') {
+            const fontSz = isDragon ? 54 : 48;
+            const yPos = 72;
+            const shadowC = charColor === colors.red ? '#7f1d1d' : (charColor === colors.green ? '#14532d' : '#1e293b');
+            
+            if (text === '白') {
+                return `
+                <g>
+                    <rect x="18" y="22" width="64" height="96" rx="6" fill="none" stroke="${colors.blue}" stroke-width="6" />
+                    <rect x="23" y="27" width="54" height="86" rx="4" fill="none" stroke="#ffffff" stroke-width="2" />
+                    <rect x="27" y="31" width="46" height="78" rx="2" fill="none" stroke="${colors.blue}" stroke-width="2" />
+                    <path d="M22,34 L28,34 L28,28 M78,34 L72,34 L72,28 M22,106 L28,106 L28,112 M78,106 L72,106 L72,112" stroke="${colors.blue}" stroke-width="2" fill="none"/>
+                </g>`;
+            }
+
+            return `
+            <g>
+                <text x="50.5" y="${yPos + 0.5}" font-family="'Noto Serif TC', serif" font-weight="900" font-size="${fontSz}" fill="${shadowC}" text-anchor="middle" dominant-baseline="middle" opacity="0.4">
+                    ${text}
+                </text>
+                <text x="50" y="${yPos}" font-family="'Noto Serif TC', serif" font-weight="900" font-size="${fontSz}" fill="${charColor}" text-anchor="middle" dominant-baseline="middle">
+                    ${text}
+                </text>
+            </g>`;
+        }
+
+        // 扁平化牌背極簡圖樣
+        function renderFlatBackPattern() {
+            return `
+            <g>
+                <rect x="4" y="4" width="92" height="132" rx="6" fill="currentColor" />
+                <rect x="8" y="8" width="84" height="124" rx="4" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.5" />
+                <circle cx="50" cy="70" r="18" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.6" />
+                <path d="M50,42 L50,98 M22,70 L78,70" stroke="#ffffff" stroke-width="1.5" opacity="0.4" />
+                <polygon points="50,60 60,70 50,80 40,70" fill="#ffffff" opacity="0.5" />
+            </g>`;
+        }
+
+        // 高動態牌庫調用
+        function drawTileSVGContent(tileCode) {
+            // 字風大牌
+            if (tileCode === 'Dong') return renderWindOrDragon('東', false, colors.black);
+            if (tileCode === 'Nan') return renderWindOrDragon('南', false, colors.black);
+            if (tileCode === 'Xi') return renderWindOrDragon('西', false, colors.black);
+            if (tileCode === 'Bei') return renderWindOrDragon('北', false, colors.black);
+            if (tileCode === 'Zhong') return renderWindOrDragon('中', true, colors.red);
+            if (tileCode === 'Fa') return renderWindOrDragon('發', true, colors.green);
+            if (tileCode === 'Bai') return renderWindOrDragon('白', true);
+
+            const num = tileCode[0];
+            const type = tileCode[1];
+
+            // 萬子系列
+            if (type === 'w') {
+                const map = { '1': '一', '2': '二', '3': '三', '4': '四', '5': '五', '6': '六', '7': '七', '8': '八', '9': '九' };
+                return renderCharacter(map[num]);
+            }
+
+            // 條子系列
+            if (type === 's') {
+                if (num === '1') return renderPeacock();
+                if (num === '2') return renderBambooStick(36, 70, 0) + renderBambooStick(64, 70, 0);
+                if (num === '3') return renderBambooStick(50, 42, 0) + renderBambooStick(34, 98, 0, 'blue') + renderBambooStick(66, 98, 0, 'blue');
+                if (num === '4') return renderBambooStick(34, 42, 0) + renderBambooStick(66, 42, 0) + renderBambooStick(34, 98, 0, 'blue') + renderBambooStick(66, 98, 0, 'blue');
+                if (num === '5') return renderBambooStick(26, 40, 0) + renderBambooStick(74, 40, 0) + renderBambooStick(50, 70, 0, 'red') + renderBambooStick(26, 100, 0) + renderBambooStick(74, 100, 0);
+                if (num === '6') return renderBambooStick(34, 34, 0) + renderBambooStick(66, 34, 0) + renderBambooStick(34, 70, 0, 'blue') + renderBambooStick(66, 70, 0, 'blue') + renderBambooStick(34, 106, 0) + renderBambooStick(66, 106, 0);
+                if (num === '7') return renderBambooStick(50, 32, 0) + renderBambooStick(26, 74, 0) + renderBambooStick(50, 74, 0) + renderBambooStick(74, 74, 0) + renderBambooStick(26, 110, 0, 'blue') + renderBambooStick(50, 110, 0, 'blue') + renderBambooStick(74, 110, 0, 'blue');
+                if (num === '8') {
+                    let topRow = renderBambooStick(22, 44, -22) + renderBambooStick(40, 44, 22) + renderBambooStick(60, 44, -22) + renderBambooStick(78, 44, 22);
+                    let bottomRow = renderBambooStick(22, 96, 22) + renderBambooStick(40, 96, -22) + renderBambooStick(60, 96, 22) + renderBambooStick(78, 96, -22);
+                    return topRow + bottomRow;
+                }
+                if (num === '9') {
+                    let r1 = renderBambooStick(26, 35, 0) + renderBambooStick(50, 35, 0) + renderBambooStick(74, 35, 0);
+                    let r2 = renderBambooStick(26, 70, 0, 'red') + renderBambooStick(50, 70, 0, 'red') + renderBambooStick(74, 70, 0, 'red');
+                    let r3 = renderBambooStick(26, 105, 0, 'blue') + renderBambooStick(50, 105, 0, 'blue') + renderBambooStick(74, 105, 0, 'blue');
+                    return r1 + r2 + r3;
+                }
+            }
+
+            // 筒子系列
+            if (type === 't') {
+                if (num === '1') return renderBigDot();
+                if (num === '2') return renderDot(50, 38, 16, 'green', 'red') + renderDot(50, 102, 16, 'blue', 'red');
+                if (num === '3') return renderDot(26, 34, 11, 'blue', 'red') + renderDot(50, 70, 11, 'red', 'green') + renderDot(74, 106, 11, 'green', 'red');
+                if (num === '4') return renderDot(32, 38, 13, 'green', 'red') + renderDot(68, 38, 13, 'blue', 'red') + renderDot(32, 102, 13, 'blue', 'red') + renderDot(68, 102, 13, 'green', 'red');
+                if (num === '5') return renderDot(26, 34, 11, 'blue', 'red') + renderDot(74, 34, 11, 'green', 'red') + renderDot(50, 70, 12, 'red', 'green') + renderDot(26, 106, 11, 'green', 'red') + renderDot(74, 106, 11, 'blue', 'red');
+                if (num === '6') return renderDot(32, 34, 11, 'green', 'red') + renderDot(68, 34, 11, 'green', 'red') + renderDot(32, 70, 11, 'red', 'green') + renderDot(68, 70, 11, 'red', 'green') + renderDot(32, 106, 11, 'blue', 'red') + renderDot(68, 106, 11, 'blue', 'red');
+                if (num === '7') return renderDot(26, 26, 9, 'green', 'red') + renderDot(50, 42, 9, 'green', 'red') + renderDot(74, 58, 9, 'green', 'red') + renderDot(32, 94, 11, 'blue', 'red') + renderDot(68, 94, 11, 'blue', 'red') + renderDot(32, 122, 11, 'blue', 'red') + renderDot(68, 122, 11, 'blue', 'red');
+                if (num === '8') return renderDot(32, 28, 10, 'blue', 'red') + renderDot(68, 28, 10, 'blue', 'red') + renderDot(32, 56, 10, 'blue', 'red') + renderDot(68, 56, 10, 'blue', 'red') + renderDot(32, 84, 10, 'blue', 'red') + renderDot(68, 84, 10, 'blue', 'red') + renderDot(32, 112, 10, 'blue', 'red') + renderDot(68, 112, 10, 'blue', 'red');
+                if (num === '9') return renderDot(26, 32, 10, 'green', 'red') + renderDot(50, 32, 10, 'green', 'red') + renderDot(74, 32, 10, 'green', 'red') + renderDot(26, 70, 10, 'red', 'green') + renderDot(50, 70, 10, 'red', 'green') + renderDot(74, 70, 10, 'red', 'green') + renderDot(26, 108, 10, 'blue', 'red') + renderDot(50, 108, 10, 'blue', 'red') + renderDot(74, 108, 10, 'blue', 'red');
+            }
+            return '';
+        }
+    </script>
+
+    <script>
+        // 牌名字典 (中文大白話)
+        const TILE_NAMES_DICT = {
+            '1w': '一萬', '2w': '二萬', '3w': '三萬', '4w': '四萬', '5w': '五萬', '6w': '六萬', '7w': '七萬', '8w': '八萬', '9w': '九萬',
+            '1t': '一筒', '2t': '二筒', '3t': '三筒', '4t': '四筒', '5t': '五筒', '6t': '六筒', '7t': '七筒', '8t': '八筒', '9t': '九筒',
+            '1s': '一條', '2s': '二條', '3s': '三條', '4s': '四條', '5s': '五條', '6s': '六條', '7s': '七條', '8s': '八條', '9s': '九條',
+            'Fa': '發財', 'Zhong': '紅中', 'Bai': '白板', 'Dong': '東風', 'Xi': '西風', 'Nan': '南風', 'Bei': '北風'
+        };
+
+        // 依據要求的胡牌形式重新整理分類 (去除花牌，確保包含圖片中的所有胡型)
+        const SCENARIO_GROUPS = [
+            {
+                title: "⚡ 基礎與特殊動作",
+                scenarios: ['eat_practice', 'pon_practice', 'ankong_practice', 'ming_kong']
+            },
+            {
+                title: "🏠 指定胡牌形式 (圖表)",
+                scenarios: ['pinghu', 'duiduihu', 'menqing_zimo', 'hunyise', 'qingyise', 'dasanyuan', 'xiaosixi', 'sianke', 'ziyise']
+            }
+        ];
+
+        // 情境資料詳細庫
+        const ARCHETYPES_TAIWAN = {
+            'eat_practice': {
+                name: "吃牌判斷練習",
+                desc: "上家打出了 5萬！你手上有 3萬、4萬 以及 6萬、7萬。如何吃最合理？",
+                waitTypeName: "吃牌順子抉擇 (完成後兩面聽 2、5萬)",
+                taishu: "吃牌練習、無台數計入",
+                generator: () => buildScenario('吃牌判斷練習', "吃上家牌", [['1t','2t','3t'],['7s','8s','9s'],['Fa','Fa','Fa'],['Bai','Bai','Bai']], ['Dong','Dong'], ['3w','4w'], ['2w','5w'], 'Bei', 'EAT')
+            },
+            'pon_practice': {
+                name: "碰牌聽牌練習",
+                desc: "對家打出了「紅中」，你手有一對紅中。立刻碰牌即可聽牌！",
+                waitTypeName: "碰牌對子聽牌 (碰紅中後，兩面聽 3、6條)",
+                taishu: "碰牌練習、無台數計入",
+                generator: () => buildScenario('碰牌聽牌練習', "碰紅中", [['1w','2w','3w'],['5t','6t','7t'],['Fa','Fa','Fa'],['Bai','Bai','Bai']], ['Dong','Dong'], ['Zhong','Zhong'], ['3s','6s'], 'Nan', 'PON')
+            },
+            'ankong_practice': {
+                name: "暗槓大挑戰",
+                desc: "你手上有三張發財，突然自己摸到第四張發財！進行「暗槓」並從牌尾補牌！",
+                waitTypeName: "暗槓聽邊張 (暗槓發財後，槓上自摸 1筒)",
+                taishu: "暗槓",
+                generator: () => buildScenario('暗槓大挑戰', "暗槓發財", [['1w','2w','3w'],['7s','8s','9s'],['Zhong','Zhong','Zhong'],['Fa','Fa','Fa']], ['9t','9t'], ['2t','3t'], ['1t'], 'Fa', 'AN_KONG')
+            },
+            'ming_kong': {
+                name: "明槓實戰",
+                desc: "手中已有東風刻子，下家打出第四張東風！進行明槓並補牌胡牌！",
+                waitTypeName: "明槓搶攻 (明槓東風，槓上開花自摸 9萬)",
+                taishu: "明槓",
+                generator: () => buildScenario('明槓實戰', "明槓東風", [['1t','2t','3t'],['5s','6s','7s'],['Bai','Bai','Bai'],['Dong','Dong','Dong']], ['Nan','Nan'], ['7w','8w'], ['9w'], 'Dong', 'MING_KONG')
+            },
+            'pinghu': {
+                name: "平胡",
+                desc: "胡牌時僅由順子及 1 對將牌組成，無花牌、字牌。",
+                waitTypeName: "平胡雙頭聽 (等待胡別家的 1、4條)",
+                taishu: "平胡",
+                generator: () => buildScenario('平胡', "平胡胡牌", [['1w','2w','3w'],['4t','5t','6t'],['7s','8s','9s'],['2t','3t','4t']], ['9w','9w'], ['2s','3s'], ['1s','4s'], 'Bei', 'PINGHU')
+            },
+            'duiduihu': {
+                name: "碰碰胡",
+                desc: "所有牌都是刻子、槓子與對子。無順子。",
+                waitTypeName: "碰碰胡雙碰對倒 (自摸發財或白板胡牌)",
+                taishu: "碰碰胡",
+                generator: () => buildScenario('碰碰胡', "自摸胡牌", [['1w','1w','1w'],['5t','5t','5t'],['9s','9s','9s'],['Dong','Dong','Dong']], ['Bai','Bai'], ['Fa','Fa'], ['Fa','Bai'], 'Zhong', 'STANDARD')
+            },
+            'menqing_zimo': {
+                name: "門清自摸",
+                desc: "門清、自摸同時成立。",
+                waitTypeName: "門清自摸雙頭聽 (自摸 7條胡牌)",
+                taishu: "門清一摸三 (3台)",
+                generator: () => buildScenario('門清自摸', "門清自摸", [['1w','2w','3w'],['4t','5t','6t'],['Fa','Fa','Fa'],['Dong','Dong','Dong']], ['9s','9s'], ['8s','9s'], ['7s'], 'Bei', 'STANDARD')
+            },
+            'hunyise': {
+                name: "混一色",
+                desc: "全部牌只含 1 種花色（萬、筒、索）和字牌。",
+                waitTypeName: "混一色兩面聽 (自摸 5萬胡牌)",
+                taishu: "混一色",
+                generator: () => buildScenario('混一色', "自摸胡牌", [['1w','2w','3w'],['4w','5w','6w'],['7w','8w','9w'],['Zhong','Zhong','Zhong']], ['Fa','Fa'], ['3w','4w'], ['2w','5w'], 'Bei', 'STANDARD')
+            },
+            'qingyise': {
+                name: "清一色",
+                desc: "整副牌皆為同一花色（萬、筒、條），且無字牌。",
+                waitTypeName: "清一色聽牌 (自摸 3萬胡牌)",
+                taishu: "清一色",
+                generator: () => buildScenario('清一色', "自摸胡牌", [['4w','5w','6w'],['4w','5w','6w'],['7w','8w','9w'],['7w','8w','9w']], ['9w','9w'], ['1w','2w'], ['3w'], 'Bei', 'STANDARD')
+            },
+            'dasanyuan': {
+                name: "大三元",
+                desc: "胡牌時，中、發、白各有三張以上（刻子）。",
+                waitTypeName: "大三元聽牌 (自摸 3萬胡牌)",
+                taishu: "大三元",
+                generator: () => buildScenario('大三元', "自摸胡牌", [['Fa','Fa','Fa'],['Zhong','Zhong','Zhong'],['Bai','Bai','Bai'],['1w','2w','3w']], ['9t','9t'], ['1w','2w'], ['3w'], 'Bei', 'STANDARD')
+            },
+            'xiaosixi': {
+                name: "小四喜",
+                desc: "東、南、西、北風中，有三組刻子與一組將牌（眼睛）。",
+                waitTypeName: "小四喜聽牌 (自摸 7條胡牌)",
+                taishu: "小四喜",
+                generator: () => buildScenario('小四喜', "自摸胡牌", [['Dong','Dong','Dong'],['Nan','Nan','Nan'],['Xi','Xi','Xi'],['1w','2w','3w']], ['Bei','Bei'], ['8s','9s'], ['7s'], 'Zhong', 'STANDARD')
+            },
+            'sianke': {
+                name: "四暗刻",
+                desc: "胡牌時，手上有 4 組暗刻（自己摸到的刻子）。",
+                waitTypeName: "四暗刻聽牌 (自摸 5條胡牌)",
+                taishu: "四暗刻",
+                generator: () => buildScenario('四暗刻', "自摸胡牌", [['1w','1w','1w'],['5t','5t','5t'],['9s','9s','9s'],['Dong','Dong','Dong']], ['Bai','Bai'], ['3s','4s'], ['2s','5s'], 'Zhong', 'STANDARD')
+            },
+            'ziyise': {
+                name: "字一色",
+                desc: "整副牌全部都由字牌（東、南、西、北、中、發、白）組成。",
+                waitTypeName: "字一色聽牌 (自摸白板胡牌)",
+                taishu: "字一色",
+                generator: () => buildScenario('字一色', "自摸胡牌", [['Dong','Dong','Dong'],['Nan','Nan','Nan'],['Xi','Xi','Xi'],['Bei','Bei','Bei']], ['Zhong','Zhong'], ['Bai','Bai'], ['Bai'], '1w', 'STANDARD')
+            }
+        };
+
+        // 核心場景工廠
+        function buildScenario(name, actionTypeName, completed, eye, waiting, win, junk, playMode = 'STANDARD') {
+            return {
+                name: name,
+                actionTypeName: actionTypeName,
+                completedSets: completed,
+                eye: eye,
+                waitingSet: waiting,
+                winningTiles: win,
+                junkTile: junk,
+                playMode: playMode
+            };
+        }
+    </script>
+
+    <script>
+        // 全域遊戲狀態控制
+        let currentScenario = null;
+        let selectedScenarioId = 'eat_practice'; 
+        let gameStep = 0; 
+        let myHand = [];        
+        let myDrawnTile = null; 
+        let myRevealedSets = []; // 公開牌組 (吃碰槓)
+        let discardedTiles = [];
+        let isDiscardAllowed = false;
+        let dealTimer = null; 
+
+        function clearGlobalTimer() {
+            if (dealTimer !== null) {
+                clearInterval(dealTimer);
+                dealTimer = null;
+            }
+        }
+
+        // Web Audio API 高擬真敲擊碰撞音效
+        function playTileSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (ctx.state === 'suspended') ctx.resume();
+                
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(1200, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.08);
+                
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+                
+                // 接觸高頻白雜音
+                const bufferSize = ctx.sampleRate * 0.01;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+                
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.setValueAtTime(3000, ctx.currentTime);
+                
+                const noiseGain = ctx.createGain();
+                noiseGain.gain.setValueAtTime(0.15, ctx.currentTime);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.02);
+                
+                osc.connect(gain);
+                noise.connect(filter);
+                filter.connect(noiseGain);
+                
+                gain.connect(ctx.destination);
+                noiseGain.connect(ctx.destination);
+                
+                osc.start();
+                noise.start();
+                osc.stop(ctx.currentTime + 0.1);
+                noise.stop(ctx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        // 側邊欄渲染
+        function renderSidebar() {
+            const container = document.getElementById('sidebar-scenarios-container');
+            container.innerHTML = '';
+
+            SCENARIO_GROUPS.forEach((group) => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = "space-y-1.5";
+                
+                const groupTitle = document.createElement('h3');
+                groupTitle.className = "text-[11px] font-black text-gray-550 uppercase tracking-widest px-2 mb-2 flex items-center gap-1.5";
+                groupTitle.textContent = group.title;
+                groupDiv.appendChild(groupTitle);
+
+                const btnWrapper = document.createElement('div');
+                btnWrapper.className = "space-y-1";
+
+                group.scenarios.forEach(scId => {
+                    const scData = ARCHETYPES_TAIWAN[scId];
+                    if (!scData) return;
+
+                    const btn = document.createElement('button');
+                    btn.id = `sidebar-${scId}`;
+                    btn.onclick = () => selectScenario(scId);
+                    btn.className = "scenario-btn w-full text-left p-3 rounded-xl text-xs hover:bg-gray-900 transition-all flex flex-col gap-1 border border-transparent";
+                    
+                    const titleSpan = document.createElement('span');
+                    titleSpan.className = "font-extrabold text-gray-250";
+                    titleSpan.textContent = scData.name;
+
+                    const descSpan = document.createElement('span');
+                    descSpan.className = "text-[10px] text-gray-400 leading-relaxed";
+                    descSpan.textContent = scData.desc;
+
+                    btn.appendChild(titleSpan);
+                    btn.appendChild(descSpan);
+                    btnWrapper.appendChild(btn);
+                });
+
+                groupDiv.appendChild(btnWrapper);
+                container.appendChild(groupDiv);
+            });
+
+            // 同步複製到行動端
+            document.getElementById('mobile-sidebar-content').innerHTML = container.innerHTML;
+            // 綁定行動端點擊
+            document.querySelectorAll('#mobile-sidebar-content button').forEach(btn => {
+                const scId = btn.id.replace('sidebar-', '');
+                btn.id = `mob-sidebar-${scId}`;
+                btn.onclick = () => selectScenario(scId);
+            });
+        }
+
+        // 非阻塞美學 Toast 彈窗 (取代 alert)
+        function showToast(message) {
+            const overlay = document.getElementById('toast-overlay');
+            const text = document.getElementById('toast-text');
+            text.textContent = message;
+            overlay.classList.remove('scale-0');
+            overlay.classList.add('scale-100');
+            setTimeout(() => {
+                overlay.classList.remove('scale-100');
+                overlay.classList.add('scale-0');
+            }, 2500);
+        }
+
+        // 選擇並加載情境
+        function selectScenario(id) {
+            selectedScenarioId = id;
+            playTileSound();
+
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                if (btn.id === `sidebar-${id}` || btn.id === `mob-sidebar-${id}`) {
+                    btn.classList.add('bg-emerald-950/80', 'border-emerald-500/30', 'text-white');
+                    btn.classList.remove('hover:bg-gray-900', 'border-transparent');
+                } else {
+                    btn.classList.remove('bg-emerald-950/80', 'border-emerald-500/30', 'text-white');
+                    btn.classList.add('hover:bg-gray-900', 'border-transparent');
+                }
+            });
+
+            // 手機側邊欄自動關閉
+            const sidebar = document.getElementById('mobile-sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            sidebar.classList.add('-translate-x-full');
+            backdrop.classList.add('hidden');
+
+            resetGame();
+        }
+    </script>
+
+    <script>
+        // 主流程推進控制
+        function handlePrimaryAction() {
+            if (gameStep === 0) {
+                triggerShuffle();
+            } else if (gameStep === 1) {
+                triggerDealing();
+            } else if (gameStep === 3) {
+                triggerSorting();
+            } else if (gameStep === 4) {
+                const sc = ARCHETYPES_TAIWAN[selectedScenarioId];
+                if (sc.playMode === 'EAT' || sc.playMode === 'PON' || sc.playMode === 'MING_KONG' || sc.playMode === 'QIANG_KONG') {
+                    triggerOpponentAction();
+                } else {
+                    triggerDrawJunk();
+                }
+            } else if (gameStep === 5 || gameStep === 6) {
+                triggerDrawWin();
+            } else if (gameStep === 7) {
+                triggerDeclareWin();
+            }
+        }
+
+        // 1. 開始洗牌
+        function triggerShuffle() {
+            clearGlobalTimer();
+            playTileSound();
+            gameStep = 1;
+
+            const sc = ARCHETYPES_TAIWAN[selectedScenarioId];
+            currentScenario = sc.generator();
+            
+            // 將情境字典中的說明與台數屬性合併至當前遊戲實體中
+            currentScenario.desc = sc.desc;
+            currentScenario.taishu = sc.taishu;
+            currentScenario.waitTypeName = sc.waitTypeName;
+
+            rawHand = [];
+            myRevealedSets = [];
+
+            currentScenario.completedSets.forEach(set => rawHand.push(...set));
+            rawHand.push(...currentScenario.eye);
+            rawHand.push(...currentScenario.waitingSet);
+            
+            // 隨機打亂底牌
+            for (let i = rawHand.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [rawHand[i], rawHand[j]] = [rawHand[j], rawHand[i]];
+            }
+            myHand = [...rawHand];
+
+            document.getElementById('stage-badge').textContent = "正在洗牌...";
+            document.getElementById('board-title').textContent = "第一步：搓牌洗牌";
+            document.getElementById('board-headline').textContent = `載入情境：${currentScenario.name}`;
+            document.getElementById('board-body').innerHTML = `
+                大師已在牌桌中央隨機打亂手牌！<br>
+                <strong>台麻知識</strong>：大家把所有麻將牌翻到背面雙手用力搓動。這在台灣話叫「洗牌」或「搓牌」，是一局的起點！
+            `;
+
+            document.getElementById('tutor-bubble').innerHTML = `
+                🔄 <strong>台麻牌桌已搓洗勻稱！</strong><br><br>
+                ✨ 當前挑戰情境：<strong class="text-emerald-400 font-extrabold">${currentScenario.name}</strong><br>
+                💡 本關玩法：${sc.desc}<br><br>
+                請點擊下方<strong>【第二步：開始發牌】</strong>，將 16 張底牌派發到您的手牌區！
+            `;
+            document.getElementById('tutor-tip').textContent = "提示：洗牌完畢，準備發放底牌！";
+
+            document.getElementById('btn-icon').textContent = "🀄";
+            document.getElementById('btn-text').textContent = "第二步：開始發牌";
+
+            const container = document.getElementById('hand-container');
+            container.innerHTML = '<div class="text-emerald-400/50 text-xs py-5 text-center w-full animate-pulse">🎲 搓牌中，手上目前沒有牌...</div>';
+            document.getElementById('hand-count-badge').textContent = `0張`;
+        }
+
+        // 2. 開始發牌
+        function triggerDealing() {
+            clearGlobalTimer();
+            gameStep = 2;
+
+            const primaryBtn = document.getElementById('primary-action-btn');
+            primaryBtn.disabled = true;
+            primaryBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            document.getElementById('stage-badge').textContent = "發牌中...";
+            const container = document.getElementById('hand-container');
+            container.innerHTML = '';
+
+            let currentDealt = [];
+            let wave = 1;
+
+            dealTimer = setInterval(() => {
+                playTileSound();
+                if (wave <= 4) {
+                    const countThisWave = wave * 4;
+                    document.getElementById('board-title').textContent = "第二步：派發底牌";
+                    document.getElementById('board-headline').textContent = `第 ${wave} 次拿牌：拿到 4 張`;
+                    document.getElementById('board-body').innerHTML = `
+                        台麻常規：每人輪流拿「4張牌為一墩」，連續發四次拿滿 16 張底牌。<br>
+                        你目前手上有 <strong>${countThisWave}</strong> 張倒蓋的底牌。
+                    `;
+
+                    for (let i = 0; i < 4; i++) {
+                        const targetIndex = (wave - 1) * 4 + i;
+                        if (rawHand[targetIndex]) {
+                            currentDealt.push(rawHand[targetIndex]);
+                        }
+                    }
+                    renderHandWithData(currentDealt, true); 
+                    wave++;
+                } else if (wave === 5) {
+                    document.getElementById('board-title').textContent = "第二步：底牌派發完成";
+                    document.getElementById('board-headline').textContent = "16 張底牌全部發齊";
+                    document.getElementById('board-body').innerHTML = `
+                        閒家拿滿 16 張。起手手牌十分凌亂，需要透過整理，我們稱之為「理牌」。
+                    `;
+                    renderHandWithData(rawHand, true);
+                    wave++;
+                } else {
+                    clearGlobalTimer();
+                    setTimeout(() => {
+                        renderHandWithData(rawHand, false); 
+                        finishDealing();
+                    }, 600);
+                }
+            }, 800);
+        }
+
+        function finishDealing() {
+            gameStep = 3;
+
+            const primaryBtn = document.getElementById('primary-action-btn');
+            primaryBtn.disabled = false;
+            primaryBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            document.getElementById('stage-badge').textContent = "等待理牌...";
+            document.getElementById('board-title').textContent = "第二步：底牌全掀開";
+            document.getElementById('board-headline').textContent = "16 張底牌雜亂無章！";
+            document.getElementById('board-body').textContent = "萬、筒、條子錯綜複雜地疊在一起，根本無法判斷聽什麼。現在，請利用智慧功能將其完美理好！";
+
+            document.getElementById('tutor-bubble').innerHTML = `
+                👀 <strong>16 張牌已完全亮開！</strong><br><br>
+                台麻底牌非常多，極易看錯漏看。下一步我們將進行「一鍵整理手牌」，自動分類並亮起智慧高亮引導燈！<br><br>
+                請點選下方<strong>【第三步：自動理牌】</strong>！
+            `;
+            document.getElementById('tutor-tip').textContent = "提示：理牌將開啟高亮模式以解析您的牌組。";
+
+            document.getElementById('btn-icon').textContent = "🧹";
+            document.getElementById('btn-text').textContent = "第三步：一鍵自動理牌";
+        }
+
+        // 3. 自動理牌與光圈高亮
+        function triggerSorting() {
+            playTileSound();
+            gameStep = 4;
+
+            // 排序手牌
+            const typeOrder = { 'w': 1, 't': 2, 's': 3 };
+            myHand.sort((a, b) => {
+                const numA = parseInt(a[0]);
+                const typeA = a[1];
+                const numB = parseInt(b[0]);
+                const typeB = b[1];
+                
+                // 風字字牌字型
+                const isSpecialA = isNaN(numA);
+                const isSpecialB = isNaN(numB);
+                
+                if (isSpecialA && !isSpecialB) return 1;
+                if (!isSpecialA && isSpecialB) return -1;
+                if (isSpecialA && isSpecialB) {
+                    return a.localeCompare(b);
+                }
+                
+                if (typeOrder[typeA] !== typeOrder[typeB]) {
+                    return typeOrder[typeA] - typeOrder[typeB];
+                }
+                return numA - numB;
+            });
+
+            renderHandWithData(myHand, false, true); 
+
+            document.getElementById('stage-badge').textContent = "分析中...";
+            document.getElementById('color-legend').classList.remove('hidden');
+
+            document.getElementById('board-title').textContent = "第三步：手牌光圈分析";
+            document.getElementById('board-headline').textContent = "台麻智慧導引燈：看懂 16 張牌結構";
+            document.getElementById('board-body').innerHTML = `
+                理牌完畢！為了方便學習，大師為您亮起了智慧高亮燈：<br>
+                🟢 <strong>綠色</strong>：已成牌的順子或刻子組。<br>
+                🟡 <strong>黃色</strong>：已成對的「眼睛」將牌組。<br>
+                🔴 <strong>紅色閃爍</strong>：等待進牌來組成搭子的「聽牌等待組」。
+            `;
+
+            let setsDesc = currentScenario.completedSets.map(set => {
+                const t = TILE_NAMES_DICT[set[0]];
+                if (set[0] === set[1] && set[1] === set[2]) {
+                    return `三張「${t}」的刻子`;
+                }
+                return `「${TILE_NAMES_DICT[set[0]]}、${TILE_NAMES_DICT[set[1]]}、${TILE_NAMES_DICT[set[2]]}」的順子`;
+            }).map(desc => `<li>• ${desc} <span class="text-green-400">【🟢已完成】</span></li>`).join('');
+
+            document.getElementById('tutor-bubble').innerHTML = `
+                📊 <strong>大師現場拆解《${currentScenario.name}》手牌結構：</strong>
+                <ul class="space-y-1.5 my-3 text-[11px] text-gray-300 bg-gray-950 p-3 rounded-xl border border-gray-800">
+                    ${setsDesc}
+                    <li>• 兩張「${TILE_NAMES_DICT[currentScenario.eye[0]]}」 <span class="text-yellow-400">【🟡眼睛】</span></li>
+                    <li>• 「${TILE_NAMES_DICT[currentScenario.waitingSet[0]]}、${TILE_NAMES_DICT[currentScenario.waitingSet[1]]}」 <span class="text-red-400 font-bold">【🔴待胡牌組】</span></li>
+                </ul>
+                本情境結算預計台數為：<strong class="text-amber-400">${currentScenario.taishu}</strong>。<br><br>
+                點擊下方按鈕以進入下一步！
+            `;
+
+            const primaryBtn = document.getElementById('primary-action-btn');
+            if (currentScenario.playMode === 'EAT' || currentScenario.playMode === 'PON' || currentScenario.playMode === 'MING_KONG' || currentScenario.playMode === 'QIANG_KONG') {
+                document.getElementById('tutor-tip').textContent = "提示：理牌完成，進入實戰觀察對家打牌！";
+                document.getElementById('btn-icon').textContent = "👀";
+                document.getElementById('btn-text').textContent = "第四步：觀察對家打牌";
+            } else if (currentScenario.playMode === 'AN_KONG') {
+                document.getElementById('tutor-tip').textContent = "提示：點擊按鈕自摸摸入第四張發財！";
+                document.getElementById('btn-icon').textContent = "➕";
+                document.getElementById('btn-text').textContent = "第四步：自摸第四張發財";
+            } else {
+                document.getElementById('tutor-tip').textContent = "提示：理牌完成，準備進行第一輪摸牌！";
+                document.getElementById('btn-icon').textContent = "➕";
+                document.getElementById('btn-text').textContent = "第四步：進行第一摸";
+            }
+        }
+
+        // 對手打牌攔截 (明槓流程已修改為別人打出第四張)
+        function triggerOpponentAction() {
+            playTileSound();
+            gameStep = 4.5;
+            document.getElementById('discard-sea-wrapper').classList.remove('hidden');
+
+            const actionPanel = document.getElementById('interactive-action-panel');
+            const eatBtn = document.getElementById('btn-eat-action');
+            const ponBtn = document.getElementById('btn-pon-action');
+            const kongBtn = document.getElementById('btn-kong-action');
+
+            eatBtn.classList.add('hidden');
+            ponBtn.classList.add('hidden');
+            kongBtn.classList.add('hidden');
+
+            let opponentDiscard = '';
+
+            if (currentScenario.playMode === 'EAT') {
+                opponentDiscard = '5w';
+                document.getElementById('board-title').textContent = "第四步：上家打出 5萬";
+                document.getElementById('board-headline').textContent = "🔔 注意！上家打出了「五萬」";
+                document.getElementById('board-body').innerHTML = `
+                    上家打出了 <strong>五萬</strong>！看看你的手牌，你手上有 <strong>3萬、4萬</strong>！<br>
+                    <strong>台麻技巧</strong>：這剛好可以跟 3萬、4萬 吃進來湊成 3-4-5萬 順子。這就是「吃牌」！<br>
+                    👉 <strong>點選中間「吃牌」按鈕，體驗吃牌！</strong>
+                `;
+                eatBtn.classList.remove('hidden');
+                document.getElementById('interactive-panel-text').textContent = "抓到了！有吃碰機會！";
+            } else if (currentScenario.playMode === 'PON') {
+                opponentDiscard = 'Zhong';
+                document.getElementById('board-title').textContent = "第四步：對家打出紅中";
+                document.getElementById('board-headline').textContent = "🔔 注意！對家打出了「紅中」";
+                document.getElementById('board-body').innerHTML = `
+                    對家打出了 <strong>紅中</strong>！你手上剛好有 <strong>兩張紅中</strong>！<br>
+                    <strong>台麻技巧</strong>：任何人打出的牌，只要你手上有一對，就可以宣告「碰牌」！<br>
+                    👉 <strong>點選中間「碰牌」按鈕，體驗碰牌聽牌！</strong>
+                `;
+                ponBtn.classList.remove('hidden');
+                document.getElementById('interactive-panel-text').textContent = "抓到了！有吃碰機會！";
+            } else if (currentScenario.playMode === 'MING_KONG') {
+                opponentDiscard = 'Dong';
+                document.getElementById('board-title').textContent = "第四步：下家打出東風";
+                document.getElementById('board-headline').textContent = "🔔 注意！下家打出了「東風」";
+                document.getElementById('board-body').innerHTML = `
+                    下家打出了 <strong>東風</strong>！你手上有 <strong>東風刻子 (三張)</strong>！<br>
+                    <strong>台麻技巧</strong>：手中有刻子，別家打出第四張時，你可以宣告「明槓」（或碰後加槓），隨後能在牌尾摸補牌。<br>
+                    👉 <strong>點選中間「槓牌」按鈕，體驗大明槓！</strong>
+                `;
+                kongBtn.classList.remove('hidden');
+                document.getElementById('interactive-panel-text').textContent = "手中有明槓機會！";
+            }
+
+            if (opponentDiscard) {
+                discardedTiles.push(opponentDiscard);
+                renderDiscards();
+            }
+
+            actionPanel.classList.remove('hidden');
+            document.getElementById('primary-action-btn').disabled = true;
+            document.getElementById('primary-action-btn').classList.add('opacity-45');
+
+            document.getElementById('tutor-bubble').innerHTML = `
+                📢 <strong>抓住絕佳的吃碰槓時機！</strong><br><br>
+                台麻實戰中，吃牌限於上家打牌，碰牌與槓牌則不限。每一次吃碰都會在桌子左側公開你的「露牌組（副露）」，此時你的暗牌將會變少。<br><br>
+                👉 <strong>請點擊中央或手牌上方的決策按鈕！</strong>
+            `;
+            document.getElementById('tutor-tip').textContent = "實戰提示：抉擇吃碰，將其轉為手牌優勢！";
+        }
+    </script>
+
+    <script>
+        // 執行露牌(吃、碰、槓)
+        function executeMeld(actionType) {
+            playTileSound();
+            const actionPanel = document.getElementById('interactive-action-panel');
+            actionPanel.classList.add('hidden');
+
+            const primaryBtn = document.getElementById('primary-action-btn');
+            primaryBtn.disabled = false;
+            primaryBtn.classList.remove('opacity-45');
+
+            if (actionType !== 'PASS') {
+                discardedTiles.pop();
+                renderDiscards();
+            }
+
+            if (actionType === 'EAT' && currentScenario.playMode === 'EAT') {
+                myRevealedSets.push(['3w', '4w', '5w']);
+                myHand = myHand.filter(t => t !== '3w' && t !== '4w');
+                renderHandWithData(myHand, false, true);
+                renderRevealedSets();
+
+                gameStep = 5;
+                document.getElementById('board-title').textContent = "吃牌成功！";
+                document.getElementById('board-headline').textContent = "成功吃入 5萬！湊齊 3-4-5萬順子";
+                document.getElementById('board-body').innerHTML = `
+                    漂亮！你成功將 3萬和 4萬 伴隨 5萬 吃進公開牌組區亮牌。<br>
+                    因為完成吃牌，手牌保持 14 張。現在你已順利進入聽牌狀態，等聽 <strong>2萬、5萬</strong>！<br>
+                    👉 <strong>點擊下方「第五步：下一輪摸牌」看看能否自摸胡牌！</strong>
+                `;
+                document.getElementById('tutor-bubble').innerHTML = `
+                    👍 <strong>吃牌選擇完全正確！</strong><br><br>
+                    看看你左邊的公開牌組區，你的吃牌組已經成形。接下來只要下一輪自摸進 <strong>二萬 或 五萬</strong>，即可獲勝！<br><br>
+                    點選下方<strong>【第五步：下一輪摸牌】</strong>。
+                `;
+                document.getElementById('btn-icon').textContent = "➕";
+                document.getElementById('btn-text').textContent = "第五步：下一輪摸牌";
+
+            } else if (actionType === 'PON' && currentScenario.playMode === 'PON') {
+                myRevealedSets.push(['Zhong', 'Zhong', 'Zhong']);
+                let removedCount = 0;
+                myHand = myHand.filter(t => {
+                    if (t === 'Zhong' && removedCount < 2) {
+                        removedCount++;
+                        return false;
+                    }
+                    return true;
+                });
+                renderHandWithData(myHand, false, true);
+                renderRevealedSets();
+
+                gameStep = 5;
+                document.getElementById('board-title').textContent = "碰牌成功！";
+                document.getElementById('board-headline').textContent = "順利碰入紅中刻子！";
+                document.getElementById('board-body').innerHTML = `
+                    碰！你將三張紅中移入公開牌組區。手牌結構精緻，目前已順利聽 <strong>3條、6條</strong>！<br>
+                    👉 <strong>點擊下方「第五步：下一輪自摸摸牌」！</strong>
+                `;
+                document.getElementById('tutor-bubble').innerHTML = `
+                    🔥 <strong>成功碰紅中！</strong><br><br>
+                    碰牌可以快速逼近聽牌。雖然會失去門清台數，但聽牌勝率會極大提升。你目前聽 <strong>3條 或 6條</strong>。<br><br>
+                    點擊<strong>【第五步：下一輪摸牌】</strong>！
+                `;
+                document.getElementById('btn-icon').textContent = "➕";
+                document.getElementById('btn-text').textContent = "第五步：下一輪摸牌";
+
+            } else if (actionType === 'KONG' && currentScenario.playMode === 'MING_KONG') {
+                myRevealedSets.push(['Dong', 'Dong', 'Dong', 'Dong']);
+                myHand = myHand.filter(t => t !== 'Dong');
+                renderHandWithData(myHand, false, true);
+                renderRevealedSets();
+
+                gameStep = 6; 
+                document.getElementById('board-title').textContent = "大明槓成功！";
+                document.getElementById('board-headline').textContent = "公開大明槓東風！牌尾拿補牌";
+                document.getElementById('board-body').innerHTML = `
+                    你大明槓了東風！在台麻中，完成槓牌必須從牌尾摸一張補牌。若補牌剛好胡牌即為「槓上開花」！<br>
+                    👉 <strong>點擊下方「第五步：槓上牌尾摸牌」進行最後自摸！</strong>
+                `;
+                document.getElementById('tutor-bubble').innerHTML = `
+                    👑 <strong>大明槓威震全場！</strong><br><br>
+                    四張東風公開亮牌。我們即將從牌尾補一張牌！<br>
+                    你聽的是 <strong>9萬</strong>，點選下方<strong>【第五步：牌尾補牌自摸】</strong>，見證奇蹟！
+                `;
+                document.getElementById('btn-icon').textContent = "🌸";
+                document.getElementById('btn-text').textContent = "第五步：牌尾補牌自摸";
+
+            } else if (actionType === 'KONG' && currentScenario.playMode === 'AN_KONG') {
+                myRevealedSets.push(['Fa', 'Fa', 'Fa', 'Fa']);
+                myHand = myHand.filter(t => t !== 'Fa');
+                myDrawnTile = null;
+                renderDrawnTile();
+                renderHandWithData(myHand, false, true);
+                renderRevealedSets();
+
+                gameStep = 6;
+                document.getElementById('board-title').textContent = "暗槓發財成功！";
+                document.getElementById('board-headline').textContent = "不亮牌暗槓四張發財！";
+                document.getElementById('board-body').innerHTML = `
+                    暗槓完成！由於發財全由你自己摸得，所以將牌反面擺放在公開牌組區（保留暗槓隱密性），接著向牌尾拿補牌！<br>
+                    👉 <strong>點擊下方「第五步：槓上牌尾摸牌」！</strong>
+                `;
+                document.getElementById('tutor-bubble').innerHTML = `
+                    🔒 <strong>暗槓發財完成！</strong><br><br>
+                    完美守住了這四張牌！現在去牌尾摸補牌，看看能不能達成 <strong>槓上開花</strong> 吧！<br><br>
+                    點擊<strong>【第五步：牌尾補牌自摸】</strong>！
+                `;
+                document.getElementById('btn-icon').textContent = "🌸";
+                document.getElementById('btn-text').textContent = "第五步：牌尾補牌自摸";
+
+            } else {
+                document.getElementById('board-headline').textContent = "你選擇了不執行吃碰槓";
+                document.getElementById('board-body').textContent = "在台麻中，保持手牌的門前清（門清），或者藏牌不吃碰，可以不暴露戰略，這也是防守大師常用的路數！";
+                document.getElementById('tutor-bubble').textContent = "選擇了防守！隨時可重新洗一局牌再次體驗！";
+                primaryBtn.onclick = () => resetGame();
+                document.getElementById('btn-icon').textContent = "🔄";
+                document.getElementById('btn-text').textContent = "重新洗一局";
+            }
+        }
+
+        // 自摸摸入第一張牌
+        function triggerDrawJunk() {
+            playTileSound();
+            gameStep = 5;
+            document.getElementById('stage-badge').textContent = "實戰中...";
+            document.getElementById('discard-sea-wrapper').classList.remove('hidden');
+
+            myDrawnTile = currentScenario.junkTile;
+            renderDrawnTile();
+
+            if (currentScenario.playMode === 'AN_KONG') {
+                const actionPanel = document.getElementById('interactive-action-panel');
+                const kongBtn = document.getElementById('btn-kong-action');
+                actionPanel.classList.remove('hidden');
+                kongBtn.classList.remove('hidden');
+                document.getElementById('interactive-panel-text').textContent = "手中有暗槓機會！";
+                document.getElementById('board-title').textContent = "第四步：自摸第四張發財！";
+                document.getElementById('board-headline').textContent = "摸入第四張發財！觸發暗槓";
+                document.getElementById('board-body').innerHTML = `
+                    你從牌牆摸進了第四張 <strong>發財</strong>！此時可以與手牌中的三張發財組成「暗槓」！<br>
+                    👉 <strong>點選牌桌中央「槓牌」按鈕，執行暗槓！</strong>
+                `;
+                return;
+            }
+
+            document.getElementById('board-title').textContent = "第四步：自摸第 17 張牌";
+            document.getElementById('board-headline').textContent = `自摸摸到了廢牌「${TILE_NAMES_DICT[myDrawnTile]}」`;
+            document.getElementById('board-body').innerHTML = `
+                現在你手上有 17 張牌了。看看最右邊那張閃著紅光的 <strong>${TILE_NAMES_DICT[myDrawnTile]}</strong>。<br>
+                為了進入「聽牌」好狀態，我們必須把這張跟手牌完全不搭的牌打出去。<br>
+                👉 <strong>【請動手點擊】最右側摸牌槽的「${TILE_NAMES_DICT[myDrawnTile]}」將其打出！</strong>
+            `;
+
+            document.getElementById('tutor-bubble').innerHTML = `
+                🃏 <strong>你自摸起了一張「${TILE_NAMES_DICT[myDrawnTile]}」！</strong><br><br>
+                因為它和手牌毫無瓜葛，為了能聽牌，這張廢牌必須打出去。<br><br>
+                👉 <strong>【請點擊打出】最右邊的廢牌，將它扔進中央棄牌海！</strong>
+            `;
+            document.getElementById('tutor-tip').textContent = `點擊右邊紅色閃爍的 ${TILE_NAMES_DICT[myDrawnTile]} 以打出。`;
+
+            const primaryBtn = document.getElementById('primary-action-btn');
+            primaryBtn.disabled = true;
+            primaryBtn.classList.add('opacity-45', 'cursor-not-allowed');
+            document.getElementById('btn-icon').textContent = "🖱️";
+            document.getElementById('btn-text').textContent = `請手動點擊打出 ${TILE_NAMES_DICT[myDrawnTile]}`;
+
+            isDiscardAllowed = true;
+        }
+
+        // 打牌核心回調
+        function handleDiscard(tileCode) {
+            if (!isDiscardAllowed) return;
+
+            if (gameStep === 5) {
+                if (tileCode !== currentScenario.junkTile) {
+                    showToast(`不能打這張！請打掉剛自摸的廢牌「${TILE_NAMES_DICT[currentScenario.junkTile]}」以保持聽牌！`);
+                    return;
+                }
+
+                playTileSound();
+                discardedTiles.push(tileCode);
+                myDrawnTile = null;
+                renderDrawnTile();
+                renderDiscards();
+                isDiscardAllowed = false;
+
+                gameStep = 6;
+                document.getElementById('stage-badge').textContent = "已聽牌！";
+                document.getElementById('board-title').textContent = "第五步：進入聽牌狀態";
+                document.getElementById('board-headline').textContent = `恭喜！目前正式進入「聽牌」階段！`;
+                document.getElementById('board-body').innerHTML = `
+                    廢牌被打出了。現在，你完美的 16 張牌正在等待：<br>
+                    👉 <strong>${currentScenario.winningTiles.map(w => TILE_NAMES_DICT[w]).join(' 或 ')}</strong>！<br>
+                    只要摸到或對手打出這張牌（第17張），即可宣告大獲全勝！
+                `;
+
+                document.getElementById('tutor-bubble').innerHTML = `
+                    🎯 <strong>漂亮打出廢牌！</strong><br><br>
+                    您現在已經完成聽牌！聽的致勝牌是：<strong class="text-yellow-400 font-extrabold">${currentScenario.winningTiles.map(w => TILE_NAMES_DICT[w]).join('、')}</strong>！<br><br>
+                    點擊下方<strong>【下一輪摸牌】</strong>，讓我們試試手氣！
+                `;
+                document.getElementById('tutor-tip').textContent = "提示：點擊按鈕進行下一輪致勝自摸！";
+
+                const primaryBtn = document.getElementById('primary-action-btn');
+                primaryBtn.disabled = false;
+                primaryBtn.classList.remove('opacity-45', 'cursor-not-allowed');
+                document.getElementById('btn-icon').textContent = "➕";
+                document.getElementById('btn-text').textContent = "下一輪摸牌";
+            }
+        }
+    </script>
+
+    <script>
+        // 4. 自摸胡牌 (摸到第 17 張致勝牌)
+        function triggerDrawWin() {
+            playTileSound();
+            gameStep = 7;
+            document.getElementById('stage-badge').textContent = "自摸胡牌！";
+
+            // 隨機摸入致勝牌之一
+            const winTile = currentScenario.winningTiles[Math.floor(Math.random() * currentScenario.winningTiles.length)];
+            myDrawnTile = winTile;
+            renderDrawnTile();
+
+            // 高亮整副牌為胡牌色
+            renderHandWithData(myHand, false, true, true);
+
+            // 亮起手牌上方的金色小按鈕
+            document.getElementById('win-button-container').classList.remove('hidden');
+
+            document.getElementById('board-title').textContent = "大結局：自摸！";
+            document.getElementById('board-headline').textContent = `太震撼了！自摸到「${TILE_NAMES_DICT[winTile]}」！`;
+            document.getElementById('board-body').innerHTML = `
+                這張熱騰騰的 <strong>${TILE_NAMES_DICT[winTile]}</strong> 正好完美拼上了紅色閃爍的待胡缺口！<br>
+                你的手牌此時完美達成了 17 張的台灣麻將勝利大典！<br>
+                👉 <strong>請點擊手牌上方的金色膠囊「宣告自摸胡牌」，完成本局演練！</strong>
+            `;
+
+            document.getElementById('tutor-bubble').innerHTML = `
+                🎉 <strong>自自自自——摸！！！</strong><br><br>
+                這就是台麻的最爽快時刻！自摸了 <strong>${TILE_NAMES_DICT[winTile]}</strong>！<br>
+                大師已經為您亮起了全牌金黃璀璨勝利光圈，證明這完全符合台灣 16 張麻將胡牌公式！<br><br>
+                👉 <strong>快點選上方金色按鈕「宣告自摸胡牌」，讓播報員大肆慶祝吧！</strong>
+            `;
+            document.getElementById('tutor-tip').textContent = "胡牌啦！點擊手牌上方的「宣告自摸胡牌」！";
+
+            const primaryBtn = document.getElementById('primary-action-btn');
+            primaryBtn.className = "w-full bg-red-650 hover:bg-red-500 text-white font-extrabold py-3.5 px-6 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 text-base transform active:scale-95 animate-bounce";
+            document.getElementById('btn-icon').textContent = "🏆";
+            document.getElementById('btn-text').textContent = "宣告自摸胡牌！";
+        }
+
+        // 5. 胡牌大勝宣告
+        function triggerDeclareWin() {
+            playTileSound();
+            gameStep = 8;
+            document.getElementById('stage-badge').textContent = "實戰教室畢業！";
+            document.getElementById('win-button-container').classList.add('hidden');
+
+            if (myDrawnTile) {
+                myHand.push(myDrawnTile);
+                myDrawnTile = null;
+                renderDrawnTile();
+            }
+
+            renderHandWithData(myHand, false, true, true);
+
+            document.getElementById('board-title').textContent = "🏆 實戰圓滿成功！";
+            document.getElementById('board-headline').textContent = `成功結算台數：【${currentScenario.taishu}】`;
+            document.getElementById('board-body').innerHTML = `
+                看看你這副無懈可擊的 17 張手牌！你剛剛親自完成了：<br>
+                • <strong>${currentScenario.name}</strong> 玩法。<br>
+                • <strong>${currentScenario.waitTypeName}</strong> 的極限操作。<br>
+                台灣麻將因為手牌多（16張底），所以防守與攻擊的抉擇更加有趣。您已經完全掌握本局的核心技巧了！
+            `;
+
+            document.getElementById('tutor-bubble').innerHTML = `
+                👑 <strong>大師級台麻演練完美結業！</strong><br><br>
+                在 2.304 本土專業版中，您成功解鎖了 <strong>${currentScenario.name}</strong>！<br>
+                結算台數：<strong class="text-amber-400 text-base">${currentScenario.taishu}</strong>。<br><br>
+                歡迎點擊左側選單，隨時挑選其餘情境進行大師級複習，或是點選下方「再挑戰一局」！
+            `;
+            document.getElementById('tutor-tip').textContent = "太傑出了！隨時點擊下方或左側選單繼續學習。";
+
+            const primaryBtn = document.getElementById('primary-action-btn');
+            primaryBtn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-emerald-950/50 transition-all flex items-center justify-center gap-2 text-base";
+            primaryBtn.disabled = false;
+            primaryBtn.classList.remove('opacity-45', 'cursor-not-allowed');
+            document.getElementById('btn-icon').textContent = "🔄";
+            document.getElementById('btn-text').textContent = "再挑戰一局本關卡";
+            primaryBtn.onclick = () => resetGame();
+        }
+
+        // 重置遊戲
+        function resetGame() {
+            clearGlobalTimer();
+            gameStep = 0;
+            myHand = [];
+            myDrawnTile = null;
+            myRevealedSets = [];
+            discardedTiles = [];
+            isDiscardAllowed = false;
+
+            document.getElementById('stage-badge').textContent = "第一步：洗牌準備";
+            document.getElementById('color-legend').classList.add('hidden');
+            document.getElementById('win-button-container').classList.add('hidden');
+
+            document.getElementById('board-title').textContent = "台麻播報員";
+            document.getElementById('board-headline').textContent = "搓牌準備開局";
+            document.getElementById('board-body').textContent = "大家把所有麻將牌翻到背面雙手用力搓動。這在台灣話叫「洗牌」或「搓牌」，是一局的起點！";
+
+            document.getElementById('discard-sea-wrapper').classList.add('hidden');
+
+            document.getElementById('hand-container').innerHTML = '<div class="text-emerald-400/50 text-xs py-5 text-center w-full">請先點擊下方「開始洗牌」載入關卡</div>';
+            document.getElementById('hand-count-badge').textContent = "0張";
+            document.getElementById('revealed-sets-container').innerHTML = '';
+
+            renderDrawnTile();
+            renderDiscards();
+
+            // 還原按鈕
+            const primaryBtn = document.getElementById('primary-action-btn');
+            primaryBtn.className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-emerald-950/50 transition-all flex items-center justify-center gap-2 text-base transform active:scale-95";
+            primaryBtn.disabled = false;
+            primaryBtn.classList.remove('opacity-45', 'cursor-not-allowed');
+            primaryBtn.onclick = handlePrimaryAction;
+            document.getElementById('btn-icon').textContent = "🌀";
+            document.getElementById('btn-text').textContent = "第一步：開始洗牌";
+
+            document.getElementById('tutor-bubble').innerHTML = `
+                歡迎來到正宗台灣麻將實戰教室！<br><br>
+                這局我們即將模擬的是：<strong class="text-emerald-400 font-extrabold">${ARCHETYPES_TAIWAN[selectedScenarioId].name}</strong>。<br><br>
+                請直接點選下方<strong>【第一步：開始洗牌】</strong>！
+            `;
+            document.getElementById('tutor-tip').textContent = "點擊按鈕開始搓牌。";
+        }
+    </script>
+
+    <script>
+        // 渲染主要手牌
+        function renderHandWithData(tilesArray, isFaceDown = false, showHighlights = false, isGameWon = false) {
+            const container = document.getElementById('hand-container');
+            container.innerHTML = '';
+
+            tilesArray.forEach((tileCode) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = "mj-tile-container mj-tile-container-active";
+
+                if (isFaceDown) {
+                    wrapper.innerHTML = `
+                        <div class="mj-flat-tile">
+                            <div class="mj-back"></div>
+                        </div>
+                    `;
+                } else {
+                    let highlightClass = "";
+                    if (showHighlights && currentScenario) {
+                        if (isGameWon) {
+                            highlightClass = "ring-green-highlight";
+                        } else {
+                            const isCompleted = currentScenario.completedSets.some(set => set.includes(tileCode));
+                            const isEye = currentScenario.eye.includes(tileCode);
+                            const isWaiting = currentScenario.waitingSet.includes(tileCode);
+
+                            if (isCompleted) highlightClass = "ring-green-highlight";
+                            else if (isEye) highlightClass = "ring-yellow-highlight";
+                            else if (isWaiting) highlightClass = "ring-red-highlight";
+                        }
+                    }
+
+                    wrapper.innerHTML = `
+                        <div class="mj-flat-tile flex items-center justify-center p-1 cursor-pointer ${highlightClass}">
+                            <svg viewBox="0 0 100 140" class="w-full h-full">${drawTileSVGContent(tileCode)}</svg>
+                        </div>
+                    `;
+
+                    wrapper.onclick = () => handleDiscard(tileCode);
+                }
+
+                container.appendChild(wrapper);
+            });
+
+            document.getElementById('hand-count-badge').textContent = `${tilesArray.length}張`;
+        }
+
+        // 渲染新摸到的自摸牌
+        function renderDrawnTile() {
+            const container = document.getElementById('drawn-tile-slot');
+            const badge = document.getElementById('draw-badge');
+            container.innerHTML = '';
+
+            if (myDrawnTile) {
+                badge.classList.remove('hidden');
+                
+                let highlightClass = "";
+                if (gameStep === 5 && currentScenario && myDrawnTile === currentScenario.junkTile) {
+                    highlightClass = "ring-red-highlight animate-bounce";
+                } else if (gameStep === 7) {
+                    highlightClass = "ring-green-highlight animate-pulse";
+                }
+
+                container.innerHTML = `
+                    <div class="mj-flat-tile flex items-center justify-center p-1 cursor-pointer ${highlightClass}">
+                        <svg viewBox="0 0 100 140" class="w-full h-full">${drawTileSVGContent(myDrawnTile)}</svg>
+                    </div>
+                `;
+                container.onclick = () => handleDiscard(myDrawnTile);
+            } else {
+                badge.classList.add('hidden');
+                container.innerHTML = `
+                    <div class="w-9 h-12 sm:w-11 sm:h-15 rounded-lg border-2 border-dashed border-white/10 flex items-center justify-center text-white/10 text-[9px] font-bold">
+                        摸牌槽
+                    </div>
+                `;
+                container.onclick = null;
+            }
+        }
+
+        // 渲染棄牌海
+        function renderDiscards() {
+            const grid = document.getElementById('discard-grid');
+            grid.innerHTML = '';
+            document.getElementById('discard-count').textContent = `共 ${discardedTiles.length} 張`;
+
+            if (discardedTiles.length === 0) {
+                grid.innerHTML = '<div class="text-white/20 text-xs col-span-full self-center">棄牌海目前是空的</div>';
+                return;
+            }
+
+            discardedTiles.forEach((tileCode) => {
+                const tileDiv = document.createElement('div');
+                tileDiv.className = "w-7 h-10 sm:w-8 sm:h-11 bg-white text-slate-800 rounded shadow-md flex items-center justify-center p-0.5 border border-slate-300 transform rotate-1";
+                tileDiv.innerHTML = `<svg viewBox="0 0 100 140" class="w-full h-full">${drawTileSVGContent(tileCode)}</svg>`;
+                grid.appendChild(tileDiv);
+            });
+        }
+
+        // 渲染吃碰槓亮牌組
+        function renderRevealedSets() {
+            const container = document.getElementById('revealed-sets-container');
+            container.innerHTML = '';
+
+            myRevealedSets.forEach(set => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = "flex gap-0.5 bg-black/30 p-1 rounded-lg border border-white/5";
+                set.forEach(tileCode => {
+                    const isDown = (tileCode === 'Fa' && currentScenario.playMode === 'AN_KONG'); // 暗槓反面倒置
+                    const tileDiv = document.createElement('div');
+                    tileDiv.className = "w-6 h-8 sm:w-8 sm:h-11 rounded";
+                    if (isDown) {
+                        tileDiv.className += " mj-back border border-emerald-950/40 shadow";
+                    } else {
+                        tileDiv.className += " bg-white flex items-center justify-center p-0.5 shadow-md border border-slate-200";
+                        tileDiv.innerHTML = `<svg viewBox="0 0 100 140" class="w-full h-full">${drawTileSVGContent(tileCode)}</svg>`;
+                    }
+                    groupDiv.appendChild(tileDiv);
+                });
+                container.appendChild(groupDiv);
+            });
+        }
+
+        // 行動端側邊欄開關
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('mobile-sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        // 頁面初次載入
+        window.onload = function() {
+            renderSidebar();
+            selectScenario('eat_practice');
+        };
+    </script>
+</body>
+</html>
